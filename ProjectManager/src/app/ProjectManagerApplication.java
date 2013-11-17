@@ -2,20 +2,19 @@ package app;
  
 import java.util.Date;
 
-import view.EntryWindow;
-import view.MainWindow;
-import view.Window;
-import model.CalendarEntry;
-import model.Model;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.CalendarEntry;
+import model.Model;
+import view.EntryWindow;
+import view.MainWindow;
+import view.Window;
  
 public class ProjectManagerApplication extends Application {
-	
 	// Model
 	private Model model;
 	
@@ -32,8 +31,12 @@ public class ProjectManagerApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        model 	= new Model();
-        mainWin = new MainWindow();
+        model = new Model();
+        model.addEntry(new CalendarEntry("Elsõ", "Meg kell etetni a macskát.", new Date(113, 1, 1)));
+        model.addEntry(new CalendarEntry("Második", "Meg kell itatni az iguánát.", new Date(113, 2, 2)));
+        model.addEntry(new CalendarEntry("Harmadik", "Meg kell óvni az iguánát a macskától.", new Date(113, 3, 3)));
+        
+        mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
         
         createWin(stage, mainWin, 800, 600);
@@ -46,13 +49,19 @@ public class ProjectManagerApplication extends Application {
 				Platform.exit();
 			}
         });
-        
-        entryWinStage.show();
-        entryWin.setCurrentEntry(new CalendarEntry("szia", "hohoho", new Date()));
+    }
+    
+    public Model getModel() {
+    	return model;
     }
     
     public void entryWindowClosed() {
 		entryWinStage.close();
+	}
+    
+	public void calendarEntryOpened(CalendarEntry entry) {
+		entryWin.setCurrentEntry(entry);
+		entryWinStage.show();
 	}
 
     // This method is used to "create windows" or something like that...

@@ -14,7 +14,7 @@ public class CalendarEntry {
 		this.description = description;
 		this.date = date;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

@@ -1,10 +1,12 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.Observable;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class Model extends Observable {
-	private ArrayList<CalendarEntry> entries = new ArrayList<CalendarEntry>();
+	private ObservableList<CalendarEntry> entries = FXCollections.observableArrayList();
 	
 	public void addEntry(CalendarEntry e) {
 		entries.add(e);
@@ -18,5 +20,9 @@ public class Model extends Observable {
 		if (entries.remove(from)) {
 			entries.add(to);
 		}
+	}
+
+	public ObservableList<CalendarEntry> getCalendarEntries() {
+		return FXCollections.unmodifiableObservableList(entries);
 	}
 }

@@ -2,8 +2,6 @@ package view;
 
 import java.text.SimpleDateFormat;
 
-import model.CalendarEntry;
-import app.ProjectManagerApplication;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import model.CalendarEntry;
+import app.ProjectManagerApplication;
 
 public class EntryWindow extends Window {
 	private ProjectManagerApplication app;
