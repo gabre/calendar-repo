@@ -59,6 +59,11 @@ public class ProjectManagerApplication extends Application {
 		entryWinStage.close();
 	}
     
+    public void entryWindowClosed(CalendarEntry newEntry) {
+    	model.modifyEntry(entryWin.getCurrentEntry(), newEntry);
+		entryWindowClosed();
+	}
+    
 	public void calendarEntryOpened(CalendarEntry entry) {
 		entryWin.setCurrentEntry(entry);
 		entryWinStage.show();

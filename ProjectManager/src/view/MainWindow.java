@@ -1,5 +1,6 @@
 package view;
 
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,6 +20,8 @@ import app.ProjectManagerApplication;
 
 public class MainWindow extends Window implements Observer {
 	private ProjectManagerApplication app;
+	
+	private ListView<CalendarEntry> entryList;
 
 	public MainWindow(ProjectManagerApplication app) {
 		super();
@@ -53,7 +56,7 @@ public class MainWindow extends Window implements Observer {
 				btnOpenProjectScheduler,
 				btnOpenResourceManager);
 		
-		final ListView<CalendarEntry> entryList = new ListView<>(app.getModel().getCalendarEntries());
+		entryList = new ListView<>(app.getModel().getCalendarEntries());
 		entryList.setCellFactory(new Callback<ListView<CalendarEntry>, ListCell<CalendarEntry>>() {
 			@Override
 			public ListCell<CalendarEntry> call(ListView<CalendarEntry> view) {
@@ -63,12 +66,7 @@ public class MainWindow extends Window implements Observer {
 		entryList.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if (event.getButton().equals(MouseButton.PRIMARY) &&
-						event.getClickCount() == 2 &&
-						!entryList.getSelectionModel().isEmpty()) {
-					CalendarEntry sel = entryList.getSelectionModel().getSelectedItem();
-					app.calendarEntryOpened(sel);
-				}
+				entryListMouseHandler(event);
 			}
 		});
 		
@@ -79,6 +77,24 @@ public class MainWindow extends Window implements Observer {
 		BorderPane.setMargin(entryList, new Insets(5));
 		
 		return mainPane;
+	}
+	
+	private void entryListMouseHandler(MouseEvent event) {
+		if (event.getButton().equals(MouseButton.PRIMARY) &&
+				event.getClickCount() == 2 &&
+				!entryList.getSelectionModel().isEmpty()) {
+			CalendarEntry sel = entryList.getSelectionModel().getSelectedItem();
+			app.calendarEntryOpened(sel);
+		} else if (event.getButton().equals(MouseButton.SECONDARY) &&
+				event.getClickCount() == 2 &&
+				!entryList.getSelectionModel().isEmpty()) {
+			CalendarEntry sel = entryList.getSelectionModel().getSelectedItem();
+			app.getModel().removeEntry(sel);
+		} else if (event.getButton().equals(MouseButton.MIDDLE)) {
+			CalendarEntry newEntry = new CalendarEntry("Új esemény", "", new Date());
+			app.getModel().addEntry(newEntry);
+			app.calendarEntryOpened(newEntry);
+		}
 	}
 
 }

@@ -1,5 +1,8 @@
 package view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -14,10 +17,16 @@ public class CalendarEntryListCell extends ListCell<CalendarEntry> {
 			return;
 		}
 		
+		DateFormat fmt = new SimpleDateFormat("yyyy. MM. dd.");
+		
 		VBox box = new VBox(5);
 		box.getChildren().addAll(
-				new Text(entry.getName()),
-				new Text(entry.getDescription()));
+				new Text(fmt.format(entry.getDate())),
+				new Text(entry.getName()));
+		if (!entry.getDescription().isEmpty()) {
+			box.getChildren().add(new Text(entry.getDescription()));
+		}
+		
 		setGraphic(box);
 	}
 
