@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -19,7 +20,6 @@ import model.CalendarEntry;
 import app.ProjectManagerApplication;
 
 public class MainWindow extends Window implements Observer {
-	private ProjectManagerApplication app;
 	
 	private ListView<CalendarEntry> entryList;
 
@@ -51,6 +51,13 @@ public class MainWindow extends Window implements Observer {
 		Button btnOpenProjectScheduler = new Button("Projektütemezõ");
 		Button btnOpenResourceManager = new Button("Erõforráskezelõ");
 		
+		btnOpenProjectScheduler.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				openProjectScheduler();
+			}
+		});
+		
 		topButtons.getChildren().addAll(
 				btnOpenProjectStepEditor,
 				btnOpenProjectScheduler,
@@ -79,6 +86,15 @@ public class MainWindow extends Window implements Observer {
 		return mainPane;
 	}
 	
+	private void openProjectScheduler() {
+		app.projSchedWinOpened();		
+	}
+	
+	/*
+	private void closeProjectScheduler() {
+		app.projSchedWinClosed();		
+	} */
+
 	private void entryListMouseHandler(MouseEvent event) {
 		if (event.getButton().equals(MouseButton.PRIMARY) &&
 				event.getClickCount() == 2 &&

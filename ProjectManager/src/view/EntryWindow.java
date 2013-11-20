@@ -23,7 +23,6 @@ import app.ProjectManagerApplication;
 public class EntryWindow extends Window {
 	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy. MM. dd.");
 	
-	private ProjectManagerApplication app;
 	private CalendarEntry currentEntry;
 	
 	private TextField dateField = new TextField();

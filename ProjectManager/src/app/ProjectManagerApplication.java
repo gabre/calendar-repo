@@ -6,12 +6,16 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.CalendarEntry;
 import model.Model;
 import view.EntryWindow;
 import view.MainWindow;
+import view.ModalWindow;
+import view.ProjectSchedulerWindow;
+import view.StepEditorWindow;
 import view.Window;
  
 public class ProjectManagerApplication extends Application {
@@ -20,8 +24,17 @@ public class ProjectManagerApplication extends Application {
 	
 	// View
 	private MainWindow mainWin;
+	
 	private EntryWindow entryWin;
 	private Stage entryWinStage;
+	
+	private ProjectSchedulerWindow projSchedWin;
+	private Stage projSchedWinStage;
+	
+	private StepEditorWindow stepEditorWin;
+	private Stage stepEditorWinStage;
+
+	private Stage dialogStage;
 	
 	
 	// ENTRY POINT
@@ -29,18 +42,27 @@ public class ProjectManagerApplication extends Application {
         launch(args);
     }
 
-    @Override
+	@Override
     public void start(Stage stage) throws Exception {
         model = new Model();
         model.addEntry(new CalendarEntry("Elsõ", "Meg kell etetni a macskát.", new Date(113, 1, 1)));
         model.addEntry(new CalendarEntry("Második", "Meg kell itatni az iguánát.", new Date(113, 2, 2)));
         model.addEntry(new CalendarEntry("Harmadik", "Meg kell óvni az iguánát a macskától.", new Date(113, 3, 3)));
+        model.addProject("almafa"); 
+        model.addProjectStep("almafa", "step1", 10, "some description");
+        model.addProjectStep("almafa", "step2", 0, "blah blah blah some description");
+        model.addProjectStep("almafa", "step3", 40, "");
         
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
+        projSchedWin = new ProjectSchedulerWindow(this);
+        stepEditorWin = new StepEditorWindow(this);
         
         createWin(stage, mainWin, 800, 600);
         entryWinStage = createWin(entryWin, 320, 240);
+        projSchedWinStage = createWin(projSchedWin, 800, 600);
+        stepEditorWinStage = createWin(stepEditorWin, 400, 400);
+        
         
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -67,6 +89,34 @@ public class ProjectManagerApplication extends Application {
 	public void calendarEntryOpened(CalendarEntry entry) {
 		entryWin.setCurrentEntry(entry);
 		entryWinStage.show();
+	}
+	
+	public void projSchedWinOpened() {
+		projSchedWinStage.show();
+	}	
+	
+	public void projSchedWinClosed() {
+		projSchedWinStage.close();
+	}	
+	
+	public void stepEditorWinOpened() {
+		stepEditorWinStage.show();
+	}	
+	
+	public void stepEditorWinClosed() {
+		stepEditorWinStage.close();
+	}	
+	
+	public void showMessage(String message)
+	{
+		ModalWindow mWin = new ModalWindow("Info", message, this);
+		dialogStage = createWin(mWin, 200, 200);
+		dialogStage.initModality(Modality.APPLICATION_MODAL);
+		dialogStage.showAndWait();
+	}
+	
+	public void closeModal() {
+		dialogStage.close();
 	}
 
     // This method is used to "create windows" or something like that...
