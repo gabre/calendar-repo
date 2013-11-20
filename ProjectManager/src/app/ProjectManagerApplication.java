@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.CalendarEntry;
 import model.Model;
+import model.Project;
+import model.ProjectStep;
 import view.EntryWindow;
 import view.MainWindow;
 import view.ModalWindow;
@@ -99,7 +101,13 @@ public class ProjectManagerApplication extends Application {
 		projSchedWinStage.close();
 	}	
 	
-	public void stepEditorWinOpened() {
+	public void stepEditorWinAddModeOpened(Project project, ProjectStep step) {
+		stepEditorWin.setCurrentStep(project, step, false);
+		stepEditorWinStage.show();
+	}	
+	
+	public void stepEditorWinEditModeOpened(Project project, ProjectStep step) {
+		stepEditorWin.setCurrentStep(project, step, true);
 		stepEditorWinStage.show();
 	}	
 	

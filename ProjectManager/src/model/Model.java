@@ -45,27 +45,28 @@ public class Model extends Observable {
 	}
 	
 	public void addProjectStep(String pname, String name, int duration, String description) {
-		 projects.get(pname).addStep(name, duration, description);
+		 projects.get(pname).addStep(new ProjectStep(name, duration, description));
 	}
 	
-	public ProjectStep getProjectStep(String pname, String name) {
-		return projects.get(pname).getStep(name);
+	public void deleteProjectStep(String pname, ProjectStep step) {
+		projects.get(pname).deleteStep(step);
 	}
 	
-	public void deleteProjectStep(String pname, String name) {
-		projects.get(pname).deleteStep(name);
-	}
-	
-	public void editProjectStep(String pname, String name, int duration, String description)
+	public void editProjectStep(String pname, ProjectStep oldStep, ProjectStep newStep)
 	{
-		projects.get(pname).editStep(name, duration, description);
+		projects.get(pname).editStep(oldStep, newStep);
 	}
 
-	public ObservableList<ProjectStep> getProject(String name)
+	public ObservableList<ProjectStep> getProjectSteps(String name)
 	{
 		return projects.get(name).getAllSteps();
 	}
 
+	public Project getProject(String name)
+	{
+		return projects.get(name);
+	}
+	
 	public HashMap<String, Integer> calculateMetrics(Project p)
 	{
 		return new HashMap<String, Integer>();

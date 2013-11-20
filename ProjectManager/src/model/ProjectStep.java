@@ -6,6 +6,11 @@ public class ProjectStep {
 	private int duration;
 	private String description;
 
+	public ProjectStep()
+	{
+		this("", 0, "");
+	}
+	
 	public ProjectStep(String name, int duration, String description)
 	{
 		this.name = name;
@@ -13,8 +18,9 @@ public class ProjectStep {
 		this.description = description;
 	}
 	
-	public void setParams(int duration, String description)
+	public void setParams(String newname, int duration, String description)
 	{
+		this.name = newname;
 		this.duration = duration;
 		this.description = description;
 	}
@@ -32,5 +38,20 @@ public class ProjectStep {
 	public String getDescription()
 	{
 		return description;
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	public void setDuration(int duration)
+	{
+		this.duration = duration;
+	}
+	
+	public void setDescription(String description)
+	{
+		this.description = description;
 	}
 }

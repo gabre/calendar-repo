@@ -7,36 +7,35 @@ import javafx.collections.ObservableMap;
 public class Project {
 	
 	private String name;
-	private ObservableMap<String, ProjectStep> steps;
+	private ObservableList<ProjectStep> steps;
 	
 	public Project(String name)
 	{
-		name = this.name;
-		steps = FXCollections.observableHashMap();
+		this.name = name;
+		steps = FXCollections.observableArrayList();
 	}
 	
-	public void addStep(String name, int duration, String description)
+	public void addStep(ProjectStep newStep)
 	{
-		steps.put(name, new ProjectStep(name, duration, description));
+		steps.add(newStep);
 	}
 	
-	public void deleteStep(String name)
+	public void deleteStep(ProjectStep step)
 	{
-		steps.remove(name);
+		steps.remove(step);
 	}
 	
-	public void editStep(String name, int duration, String description)
+	public void editStep(ProjectStep oldStep, ProjectStep newStep)
 	{
-		ProjectStep s = steps.get(name);
-		s.setParams(duration, description);
-	}
-	
-	public ProjectStep getStep(String name)
-	{
-		return steps.get(name);
+		steps.remove(oldStep);
+		steps.add(newStep);
 	}
 
 	public ObservableList<ProjectStep> getAllSteps() {
-		return FXCollections.observableArrayList(steps.values());
+		return steps;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

@@ -1,5 +1,6 @@
 package view;
 
+import model.Project;
 import model.ProjectStep;
 import app.ProjectManagerApplication;
 import javafx.collections.ObservableList;
@@ -11,10 +12,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class ProjectSchedulerWindow extends Window {
@@ -55,7 +58,7 @@ public class ProjectSchedulerWindow extends Window {
         	);
         tView.getColumns().addAll(col1, col2, col3);	
 		tView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		tView.setItems(app.getModel().getProject("almafa"));
+		tView.setItems(app.getModel().getProjectSteps("almafa"));
 		/*     *****          */
 		
 		Button addButton = new Button("Add");
@@ -78,8 +81,11 @@ public class ProjectSchedulerWindow extends Window {
 		buttonsHBox.setSpacing(4);
 		
 		hBox.getChildren().add(tView);
+		hBox.setHgrow(tView, Priority.ALWAYS);
 		buttonsHBox.getChildren().addAll(addButton, editButton, deleteButton);
 		rightSideVBox.getChildren().addAll(props, buttonsHBox, metrics);
+		rightSideVBox.setVgrow(props, Priority.SOMETIMES);
+		rightSideVBox.setVgrow(metrics, Priority.SOMETIMES);
 		hBox.getChildren().add(rightSideVBox);
 		
 		mainPane.setCenter(hBox);
@@ -87,32 +93,34 @@ public class ProjectSchedulerWindow extends Window {
 		addButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				addStep();
+				handleAddStep();
 			}
 		});
 		
 		editButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				handleEdit(event);
+				handleEditStep(event);
 			}
 		});
 		
 		return mainPane;
 	}
 
-	private void addStep() {
-		//tView.getItems().add(e)		
+	private void handleAddStep() {
+		Project currentProject = app.getModel().getProject("almafa");
+		app.stepEditorWinAddModeOpened(currentProject, new ProjectStep());	
 	}
 
-	private void handleEdit(ActionEvent event) {
-		ObservableList<?> selectedOne = tView.getSelectionModel().getSelectedCells();
+	private void handleEditStep(ActionEvent event) {
+		ObservableList<ProjectStep> selectedOne = tView.getSelectionModel().getSelectedItems();
 		if (selectedOne.size() == 0)
 		{
 			app.showMessage("You have to select a project step");
 		} else
 		{
-			app.stepEditorWinOpened();
+			ProjectStep item = (ProjectStep) selectedOne.get(0);
+			app.stepEditorWinEditModeOpened(app.getModel().getProject("almafa"), item);
 		}
 	}
 
