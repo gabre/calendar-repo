@@ -100,11 +100,29 @@ public class ProjectSchedulerWindow extends Window {
 		editButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				handleEditStep(event);
+				handleEditStep();
 			}
 		});
 		
+		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				handleDeleteStep();
+			}
+		});		
 		return mainPane;
+	}
+
+	protected void handleDeleteStep() {
+		Project currentProject = app.getModel().getProject("almafa");
+		ProjectStep item = getSelectedProjectStep();
+		if (item == null)
+		{
+			app.showMessage("You have to select a project step to delete.");
+		} else
+		{
+			app.getModel().deleteProjectStep(currentProject.getName(), item);	
+		}
 	}
 
 	private void handleAddStep() {
@@ -112,16 +130,27 @@ public class ProjectSchedulerWindow extends Window {
 		app.stepEditorWinAddModeOpened(currentProject, new ProjectStep());	
 	}
 
-	private void handleEditStep(ActionEvent event) {
+	private void handleEditStep() {
+		ProjectStep item = getSelectedProjectStep();
+		if (item == null)
+		{
+			app.showMessage("You have to select a project step to edit.");
+		} else
+		{
+			app.stepEditorWinEditModeOpened(app.getModel().getProject("almafa"), item);
+		}
+	}
+	
+	private ProjectStep getSelectedProjectStep() {
 		ObservableList<ProjectStep> selectedOne = tView.getSelectionModel().getSelectedItems();
 		if (selectedOne.size() == 0)
 		{
-			app.showMessage("You have to select a project step");
+			return null;
 		} else
 		{
-			ProjectStep item = (ProjectStep) selectedOne.get(0);
-			app.stepEditorWinEditModeOpened(app.getModel().getProject("almafa"), item);
+			return (ProjectStep) selectedOne.get(0);	
 		}
+		
 	}
 
 }

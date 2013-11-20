@@ -27,8 +27,8 @@ public class Project {
 	
 	public void editStep(ProjectStep oldStep, ProjectStep newStep)
 	{
-		steps.remove(oldStep);
-		steps.add(newStep);
+		int index = steps.indexOf(oldStep);
+		steps.set(index, newStep);
 	}
 
 	public ObservableList<ProjectStep> getAllSteps() {

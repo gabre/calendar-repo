@@ -78,6 +78,9 @@ public class StepEditorWindow extends Window {
 		this.justUpdate = justUpdate;
 		this.currentProject = project;
 		this.currentStep = step;		
+		nameField.setText(step.getName());
+		durationField.setText(Integer.toString(step.getDuration()));
+		descriptionField.setText(step.getDescription());
 	}
 
 }

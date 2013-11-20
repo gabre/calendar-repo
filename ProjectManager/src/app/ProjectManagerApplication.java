@@ -60,10 +60,10 @@ public class ProjectManagerApplication extends Application {
         projSchedWin = new ProjectSchedulerWindow(this);
         stepEditorWin = new StepEditorWindow(this);
         
-        createWin(stage, mainWin, 800, 600);
-        entryWinStage = createWin(entryWin, 320, 240);
-        projSchedWinStage = createWin(projSchedWin, 800, 600);
-        stepEditorWinStage = createWin(stepEditorWin, 400, 400);
+        createWin(stage, mainWin);
+        entryWinStage = createWin(entryWin);
+        projSchedWinStage = createWin(projSchedWin);
+        stepEditorWinStage = createWin(stepEditorWin);
         
         
         stage.show();
@@ -118,7 +118,7 @@ public class ProjectManagerApplication extends Application {
 	public void showMessage(String message)
 	{
 		ModalWindow mWin = new ModalWindow("Info", message, this);
-		dialogStage = createWin(mWin, 200, 200);
+		dialogStage = createWin(mWin);
 		dialogStage.initModality(Modality.APPLICATION_MODAL);
 		dialogStage.showAndWait();
 	}
@@ -129,13 +129,13 @@ public class ProjectManagerApplication extends Application {
 
     // This method is used to "create windows" or something like that...
     // The first stage is created "by the platform" (according to the docs)
-    private Stage createWin(Window win, double width, double height) {
+    private Stage createWin(Window win) {
     	Stage stage = new Stage();
-    	createWin(stage, win, width, height);
+    	createWin(stage, win);
     	return stage;
     }
     
-    private Stage createWin(Stage stage, Window win, double width, double height) {
+    private Stage createWin(Stage stage, Window win) {
     	Scene scene = new Scene(win.getView());
         // Stylesheet could be added this way:
     	scene.getStylesheets().add("styles.css");
