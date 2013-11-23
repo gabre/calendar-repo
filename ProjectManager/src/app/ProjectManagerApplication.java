@@ -10,6 +10,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.CalendarEntry;
+import model.DataManager;
 import model.Model;
 import model.Project;
 import model.ProjectStep;
@@ -17,12 +18,14 @@ import view.EntryWindow;
 import view.MainWindow;
 import view.ModalWindow;
 import view.ProjectSchedulerWindow;
+import view.ResourceManagementWindow;
 import view.StepEditorWindow;
 import view.Window;
  
 public class ProjectManagerApplication extends Application {
 	// Model
 	private Model model;
+	private DataManager dataManager;
 	
 	// View
 	private MainWindow mainWin;
@@ -36,6 +39,9 @@ public class ProjectManagerApplication extends Application {
 	private StepEditorWindow stepEditorWin;
 	private Stage stepEditorWinStage;
 
+	private ResourceManagementWindow resourceManagementWin;
+	private Stage resourceManagementWinStage;
+	
 	private Stage dialogStage;
 	
 	
@@ -55,16 +61,19 @@ public class ProjectManagerApplication extends Application {
         model.addProjectStep("almafa", "step2", 0, "blah blah blah some description");
         model.addProjectStep("almafa", "step3", 40, "");
         
+        dataManager = new DataManager();
+        
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
         projSchedWin = new ProjectSchedulerWindow(this);
         stepEditorWin = new StepEditorWindow(this);
+        resourceManagementWin = new ResourceManagementWindow(this);
         
         createWin(stage, mainWin);
         entryWinStage = createWin(entryWin);
         projSchedWinStage = createWin(projSchedWin);
         stepEditorWinStage = createWin(stepEditorWin);
-        
+        resourceManagementWinStage = createWin(resourceManagementWin);
         
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -77,6 +86,10 @@ public class ProjectManagerApplication extends Application {
     
     public Model getModel() {
     	return model;
+    }
+    
+    public DataManager getDataManager() {
+    	return dataManager;
     }
     
     public void entryWindowClosed() {
@@ -114,6 +127,10 @@ public class ProjectManagerApplication extends Application {
 	public void stepEditorWinClosed() {
 		stepEditorWinStage.close();
 	}	
+	
+	public void resourceManagementOpened() {
+		resourceManagementWinStage.show();
+	}
 	
 	public void showMessage(String message)
 	{
