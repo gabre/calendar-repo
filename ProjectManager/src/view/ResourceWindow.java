@@ -3,6 +3,7 @@ package view;
 import java.util.Observable;
 import java.util.Observer;
 
+import model.ResourceElement;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,18 +25,22 @@ public class ResourceWindow extends Window implements Observer {
 	private ComboBox<String> competence;
 	private boolean isConfirmed;
 	
-	public ResourceWindow(String title, ObservableList<String> competences) {
+	public ResourceWindow(String title, ObservableList<String> competences, ResourceElement value) {
 		windowTitle = title;
 		resourceName = new TextField("");
 		competence = new ComboBox<String>();
 		competence.setItems(competences);
 		isConfirmed = false;
+		if(value != null)
+		{
+			resourceName.setText(value.getName());
+			competence.getSelectionModel().select(value.getCompetence());
+		}
 	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

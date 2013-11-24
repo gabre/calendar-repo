@@ -7,20 +7,24 @@ import java.util.Observable;
 import java.util.Observer;
 
 import app.ProjectManagerApplication;
-import model.DataManager;
 import model.ResourceElement;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -33,6 +37,12 @@ public class ResourceManagementWindow extends Window implements Observer {
 	private BorderPane contentArea;
 	private TableView<ResourceElement> resourceView;
 	private TableView<String> competenceView;
+	private TextField resourceFilter;
+	private TextField competenceFilter;
+	private Button addResourceButton;
+	private Button deleteResourceButton;
+	private Button editResourceButton;
+	private Button filterResourceButton;
 
 	public ResourceManagementWindow(ProjectManagerApplication app) {
 		super();
@@ -68,88 +78,94 @@ public class ResourceManagementWindow extends Window implements Observer {
         resCol1.setCellValueFactory(new PropertyValueFactory<ResourceElement,String>("name"));
         resCol2.setCellValueFactory(new PropertyValueFactory<ResourceElement,String>("competence"));
         resourceView.getColumns().addAll(resCol1, resCol2);
+        resourceView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         try {
 			resourceView.setItems(app.getDataManager().getResources());
-		} catch (SQLException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+		} catch (SQLException ex) {
+			app.showMessage(ex.getMessage());
 		}
         resourceView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         resourceControlls.getChildren().add(resourceView);
 
         HBox resourceButtons = new HBox(5);
         
-        Button addResourceButton = new Button("Add");
+        addResourceButton = new Button("Add");
         addResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	ResourceWindow window = null;
             	try {
-            		window = new ResourceWindow("Project Manager / Add resource", app.getDataManager().getCompetences());
+            		window = new ResourceWindow("Project Manager / Add resource", app.getDataManager().getCompetences(), null);
+            		showWindow(window, 300, 200);
+            		if(window.isConfirmed()) {
+                    	app.getDataManager().addResource(window.getName(), window.getCompetence());
+                    	resourceView.setItems(app.getDataManager().getResources());
+                    }
             	} catch (SQLException ex) {
+            		app.showMessage(ex.getMessage());
             	}
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 200);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
-                if(window.isConfirmed()) {
-                	try {
-                		app.getDataManager().addResource(window.getName(), window.getCompetence());
-                		resourceView.setItems(app.getDataManager().getResources());
-                	} catch (SQLException ex) {
-                		app.showMessage(ex.getMessage());
-                	}
-                }
             }
         });
         resourceButtons.getChildren().add(addResourceButton);
         
-        Button deleteResourceButton = new Button("Delete");
+        deleteResourceButton = new Button("Delete");
         deleteResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                //((Button)e.getSource()).setText("almafa");
+            	if(!resourceView.getSelectionModel().isEmpty())
+            		try {
+            			app.getDataManager().deleteResource(resourceView.getSelectionModel().getSelectedItem());
+            			resourceView.setItems(app.getDataManager().getResources());
+            		} catch (SQLException ex) {
+            			app.showMessage(ex.getMessage());
+            		}
             }
         });
         resourceButtons.getChildren().add(deleteResourceButton);
         
-        Button editResourceButton = new Button("Edit");
+        editResourceButton = new Button("Edit");
         editResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	ResourceWindow window = null;
-            	try {
-            		window = new ResourceWindow("Project Manager / Edit resource", app.getDataManager().getCompetences());
-            	} catch (SQLException ex) {
-            		
-            	}
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 200);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
+            	if(!resourceView.getSelectionModel().isEmpty())
+            		try {
+            			ResourceWindow window = new ResourceWindow("Project Manager / Edit resource", app.getDataManager().getCompetences(), resourceView.getSelectionModel().getSelectedItem());
+            			showWindow(window, 300, 200);
+            			if(window.isConfirmed()) {
+            				app.getDataManager().editResource(resourceView.getSelectionModel().getSelectedItem(), window.getName(), window.getCompetence());
+            				resourceView.setItems(app.getDataManager().getResources());
+            			}
+            		} catch (SQLException ex) {
+            			app.showMessage(ex.getMessage());
+            		}
             }
         });
         resourceButtons.getChildren().add(editResourceButton);
+        resourceControlls.getChildren().add(resourceButtons);
         
-        Button filterResourceButton = new Button("Filter");
+        HBox resourceFilterElements = new HBox(10);
+        
+        Label resourceFilterLabel = new Label("Filter:");
+        resourceFilterElements.getChildren().add(resourceFilterLabel);
+        
+        resourceFilter = new TextField();
+        resourceFilterElements.getChildren().add(resourceFilter);
+        
+        filterResourceButton = new Button("Filter");
         filterResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	ResourceWindow window = null;
             	try {
-            		window = new ResourceWindow("Project Manager / Filter resource", app.getDataManager().getCompetences());
-            	} catch(SQLException ex) { 
-            	}
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 200);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
+					ObservableList<ResourceElement> values = app.getDataManager().getResources();
+	            	for(int i = values.size() - 1; i>=0; --i )
+	            	{
+	            		if(!values.get(i).getName().startsWith(resourceFilter.getText()))
+	            			values.remove(i);
+	            	}
+	            	resourceView.setItems(values);
+				} catch (SQLException ex) {
+					app.showMessage(ex.getMessage());
+				}
             }
         });
-        resourceButtons.getChildren().add(filterResourceButton);
-        resourceControlls.getChildren().add(resourceButtons);
+        resourceFilterElements.getChildren().add(filterResourceButton);
+        resourceControlls.getChildren().add(resourceFilterElements);
         
         topArea.getChildren().add(resourceControlls);
 
@@ -166,11 +182,11 @@ public class ResourceManagementWindow extends Window implements Observer {
         });
         competenceView.getColumns().add(compCol);
         competenceView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        competenceView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         try {
 			competenceView.setItems(app.getDataManager().getCompetences());
-		} catch (SQLException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		} catch (SQLException ex) {
+			app.showMessage(ex.getMessage());
 		}
         competenceControlls.getChildren().add(competenceView);
 
@@ -179,13 +195,8 @@ public class ResourceManagementWindow extends Window implements Observer {
         Button addCompetenceButton = new Button("Add");
         addCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	CompetenceWindow window = new CompetenceWindow("Project Manager / Add competence");
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 120);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
+            	CompetenceWindow window = new CompetenceWindow("Project Manager / Add competence", "");
+            	showWindow(window, 300, 120);
                 if(window.isConfirmed())
 					try {
 						app.getDataManager().addCompetence(window.getCompetence());
@@ -200,7 +211,13 @@ public class ResourceManagementWindow extends Window implements Observer {
         Button deleteCompetenceButton = new Button("Delete");
         deleteCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                //((Button)e.getSource()).setText("almafa");
+            	if(!competenceView.getSelectionModel().isEmpty())
+            		try {
+            			app.getDataManager().deleteCompetence(competenceView.getSelectionModel().getSelectedItem());
+            			competenceView.setItems(app.getDataManager().getCompetences());
+            		} catch (SQLException ex) {
+            			app.showMessage(ex.getMessage());
+            		}
             }
         });
         competenceButtons.getChildren().add(deleteCompetenceButton);
@@ -208,31 +225,50 @@ public class ResourceManagementWindow extends Window implements Observer {
         Button editCompetenceButton = new Button("Edit");
         editCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	CompetenceWindow window = new CompetenceWindow("Project Manager / Edit competence");
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 120);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
+            	if(!competenceView.getSelectionModel().isEmpty()) {
+            		CompetenceWindow window = new CompetenceWindow("Project Manager / Edit competence", competenceView.getSelectionModel().getSelectedItem());
+            		showWindow(window, 300, 120);
+            		if(window.isConfirmed()) {
+            			try {
+            				app.getDataManager().editCompetence(competenceView.getSelectionModel().getSelectedItem(), window.getCompetence());
+            				competenceView.setItems(app.getDataManager().getCompetences());
+            				resourceView.setItems(app.getDataManager().getResources());
+            			} catch (SQLException ex) {
+            				app.showMessage(ex.getMessage());
+            			}
+            		}
+            	}
             }
         });
         competenceButtons.getChildren().add(editCompetenceButton);
+        competenceControlls.getChildren().add(competenceButtons);
+        
+        HBox competenceFilterElements = new HBox(10);
+        
+        Label competenceFilterLabel = new Label("Filter:");
+        competenceFilterElements.getChildren().add(competenceFilterLabel);
+        
+        competenceFilter = new TextField();
+        competenceFilterElements.getChildren().add(competenceFilter);
         
         Button filterCompetenceButton = new Button("Filter");
         filterCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	CompetenceWindow window = new CompetenceWindow("Project Manager / Filter competence");
-            	Stage stage = new Stage();
-            	Scene scene = new Scene(window.getView(), 300, 120);
-            	scene.getStylesheets().add("styles.css");
-                stage.setScene(scene);
-                stage.setTitle(window.getTitle());
-                stage.showAndWait();
+				try {
+					ObservableList<String> values = app.getDataManager().getCompetences();
+	            	for(int i = values.size() - 1; i>=0; --i )
+	            	{
+	            		if(!values.get(i).startsWith(competenceFilter.getText()))
+	            			values.remove(i);
+	            	}
+	            	competenceView.setItems(values);
+				} catch (SQLException ex) {
+					app.showMessage(ex.getMessage());
+				}
             }
         });
-        competenceButtons.getChildren().add(filterCompetenceButton);
-        competenceControlls.getChildren().add(competenceButtons);
+        competenceFilterElements.getChildren().add(filterCompetenceButton);
+        competenceControlls.getChildren().add(competenceFilterElements);
         
         topArea.getChildren().add(competenceControlls);
         
@@ -243,7 +279,15 @@ public class ResourceManagementWindow extends Window implements Observer {
         // contentArea.centerProperty().bind(model.contentProperty());
         contentArea.getStyleClass().add("body");
         mainPane.setCenter(contentArea);
-        
         return mainPane;
+	}
+	
+	private void showWindow(Window win, int width, int height) {
+		Stage stage = new Stage();
+    	Scene scene = new Scene(win.getView(), width, height);
+    	scene.getStylesheets().add("styles.css");
+        stage.setScene(scene);
+        stage.setTitle(win.getTitle());
+        stage.showAndWait();
 	}
 }

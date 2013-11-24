@@ -47,12 +47,14 @@ public class DataManager {
 		stm.execute("INSERT INTO Resources (Resource, Competence) VALUES('" + name + "', " + r.getInt(1) +")");
 	}
 	
-	public void deleteResource(String name) {
-		
+	public void deleteResource(ResourceElement value) throws SQLException {
+		Statement stm = conn.createStatement();
+		stm.execute("DELETE FROM Resources WHERE Resource = '" + value.getName() + "' AND Competence = " + value.getCompetenceId());
 	}
 	
-	public void editResource(String name) {
-		
+	public void editResource(ResourceElement oldValue, String newName, String newComp) throws SQLException {
+		Statement stm = conn.createStatement();
+		stm.execute("UPDATE Resources SET Resource = '" + newName + "', Competence = " + stm.executeQuery("SELECT Id FROM Competences WHERE Competence = '" + newComp + "'").getInt(1) + " WHERE Resource = '" + oldValue.getName() + "' AND Competence = " + oldValue.getCompetenceId());
 	}
 	
 	public void addCompetence(String name) throws SQLException {
@@ -62,11 +64,14 @@ public class DataManager {
 	
 	public void deleteCompetence(String name) throws SQLException {
 		Statement stm = conn.createStatement();
-		stm.execute("DELETE FROM Competences WHERE Competence = " + name);
+		if(stm.executeQuery("SELECT COUNT(Id) FROM Resources WHERE Competence = " + stm.executeQuery("SELECT Id FROM Competences WHERE Competence = '" + name + "'").getInt(1)).getInt(1) > 0)
+			throw new SQLException("Item is referenced in other table.");
+		stm.execute("DELETE FROM Competences WHERE Competence = '" + name + "'");
 	}
 	
-	public void editCompetence(String name) {
-		
+	public void editCompetence(String oldName, String newName) throws SQLException {
+		Statement stm = conn.createStatement();
+		stm.execute("UPDATE Competences SET Competence = '" + newName + "' WHERE Competence = '" + oldName +"'");
 	}
 	
 	public ObservableList<String> getCompetences() throws SQLException {
@@ -82,10 +87,10 @@ public class DataManager {
 	public ObservableList<ResourceElement> getResources() throws SQLException {
 		ObservableList<ResourceElement> result = FXCollections.observableArrayList();
 		Statement stm = conn.createStatement();
-		ResultSet t = stm.executeQuery("SELECT Resource, Competences.Competence FROM Resources JOIN Competences ON Resources.Competence = Competences.Id");
+		ResultSet t = stm.executeQuery("SELECT Resource, Competences.Id, Competences.Competence FROM Resources JOIN Competences ON Resources.Competence = Competences.Id");
 		
         while(t.next()) {
-        	result.add(new ResourceElement(t.getString(1), t.getString(2)));
+        	result.add(new ResourceElement(t.getString(1), t.getString(3), t.getInt(2)));
         }  
 		return result;
 	}

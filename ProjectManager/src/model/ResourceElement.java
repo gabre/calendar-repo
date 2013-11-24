@@ -3,10 +3,12 @@ package model;
 public class ResourceElement {
 	private String name;
 	private String competence;
+	private int competenceId;
 	
-	public ResourceElement(String n, String c) {
+	public ResourceElement(String n, String c, int id) {
 		name = n;
 		competence = c;
+		competenceId = id;
 	}
 	
 	public String getName() {
@@ -15,5 +17,9 @@ public class ResourceElement {
 	
 	public String getCompetence() {
 		return competence;
+	}
+	
+	public int getCompetenceId() {
+		return competenceId;
 	}
 }

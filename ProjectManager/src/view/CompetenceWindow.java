@@ -21,10 +21,12 @@ public class CompetenceWindow extends Window implements Observer {
 	private TextField competenceName;
 	private boolean isConfirmed;
 	
-	public CompetenceWindow(String title) {
+	public CompetenceWindow(String title, String value) {
 		windowTitle = title;
 		competenceName = new TextField();
 		isConfirmed = false;
+		if (!value.isEmpty())
+			competenceName.setText(value);
 	}
 	
 	@Override
