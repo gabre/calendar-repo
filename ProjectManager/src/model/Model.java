@@ -63,7 +63,8 @@ public class Model extends Observable {
 	}
 
 	private double calculateAvgDuration(Project p) {
-		return calculateSumDuration(p) / p.getAllSteps().size();
+		int size = p.getAllSteps().size();
+		return size == 0 ? 0 : calculateSumDuration(p) / size;
 	}
 
 	public void addProject(Project proj)
