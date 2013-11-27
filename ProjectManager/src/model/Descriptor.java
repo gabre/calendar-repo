@@ -4,13 +4,31 @@ public class Descriptor {
 	private String name;
 	private int duration;
 	private String description;
-	private int hardness = 0;
+	private int difficulty = 0;
+	String neededCompetence = "kkkkkkkk";
+	int cost = 0;
 	
-	public Descriptor(String name, int duration, String desc, int hardness) {
+	public Descriptor(String name, int duration, String desc, int difficulty) {
 		this.name = name;
 		this.duration = duration;
 		this.description = desc;
-		this.hardness = hardness;
+		this.difficulty = difficulty;
+	}
+	
+	public String getNeededCompetence() {
+		return neededCompetence;
+	}
+
+	public void setNeededCompetence(String neededCompetence) {
+		this.neededCompetence = neededCompetence;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
 	}
 	
 	public String getName() {
@@ -31,11 +49,11 @@ public class Descriptor {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public int getHardness() {
-		return hardness;
+	public int getDifficulty() {
+		return difficulty;
 	}
-	public void setHardness(int hardness) {
-		this.hardness = hardness;
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
 	}
 	
 }

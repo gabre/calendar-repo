@@ -76,14 +76,14 @@ public class ResourceWindow extends Window implements Observer {
             	}
             }
         });
-		Button cancleButton = new Button("Cancle");
-        cancleButton.setOnAction(new EventHandler<ActionEvent>() {
+		Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
             }
         });
 		confirmLine.getChildren().add(okButton);
-		confirmLine.getChildren().add(cancleButton);
+		confirmLine.getChildren().add(cancelButton);
 		
 		topArea.getChildren().add(resourceLine);
 		topArea.getChildren().add(competenceLine);

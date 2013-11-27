@@ -48,4 +48,34 @@ public class ProjectStep {
 	{
 		desc.setDescription(description);
 	}
+
+	public void setNeededCompetence(String competence)
+	{
+		desc.setNeededCompetence(competence);
+	}
+	
+	public String getNeededCompetence()
+	{
+		return desc.getNeededCompetence();
+	}
+	
+	public void setCost(int cost)
+	{
+		desc.setCost(cost);
+	}
+	
+	public int getCost()
+	{
+		return desc.getCost();
+	}	
+	
+	public void setDifficulty(int cost)
+	{
+		desc.setDifficulty(cost);
+	}
+	
+	public int getDifficulty()
+	{
+		return desc.getDifficulty();
+	}	
 }

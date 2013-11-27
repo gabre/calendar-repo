@@ -7,6 +7,7 @@ import java.util.Set;
 import model.Project;
 import model.ProjectStep;
 import app.ProjectManagerApplication;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,6 +31,7 @@ public class ProjectSchedulerWindow extends Window {
 	private TableView<ProjectStep> tView;
 	private Project currentProject;
 	private VBox metrics;
+	private VBox props;
 
 	public ProjectSchedulerWindow(ProjectManagerApplication app) {
 		super();
@@ -72,7 +74,7 @@ public class ProjectSchedulerWindow extends Window {
 		Button deleteButton = new Button("Remove");
 		HBox buttonsHBox = new HBox();
 		HBox upDownHBox = new HBox();
-		HBox props = new HBox();
+		props = new VBox();
 		metrics = new VBox();
 		
 		Label metricsText = new Label("Metrics");
@@ -139,10 +141,29 @@ public class ProjectSchedulerWindow extends Window {
 				exchangeSteps(1);
 			}
 		});
+		tView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<ProjectStep>()
+			    {
+	        @Override
+	        public void onChanged(Change<? extends ProjectStep> change)
+	        {
+	            if (change.getList().size() == 1)
+	            {
+	            	setupProps(change.getList().get(0));
+	            }
+	        }
 
+	    });
+		
 		return mainPane;
 	}
 	
+	protected void setupProps(ProjectStep projectStep) {
+    	props.getChildren().clear();
+    	props.getChildren().addAll(new Label("Competence needed: " + projectStep.getNeededCompetence()),	
+    							   new Label("Cost: " + Integer.toString(projectStep.getCost())),
+    							   new Label("Hardness: " + Integer.toString(projectStep.getDifficulty())));
+	}
+
 	private void addMetrics(VBox metrics) {
 		if(currentProject == null) {
 			return;
