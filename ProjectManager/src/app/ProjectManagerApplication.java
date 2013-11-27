@@ -16,6 +16,7 @@ import model.Model;
 import model.Project;
 import model.ProjectStep;
 import view.EntryWindow;
+import view.GraphEditorWindow;
 import view.MainWindow;
 import view.ModalWindow;
 import view.ProjectSchedulerWindow;
@@ -33,6 +34,9 @@ public class ProjectManagerApplication extends Application {
 	
 	private EntryWindow entryWin;
 	private Stage entryWinStage;
+	
+	private GraphEditorWindow graphEditorWin;
+	private Stage graphEditorWinStage;
 	
 	private ProjectSchedulerWindow projSchedWin;
 	private Stage projSchedWinStage;
@@ -68,12 +72,14 @@ public class ProjectManagerApplication extends Application {
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
         projSchedWin = new ProjectSchedulerWindow(this);
+        graphEditorWin = new GraphEditorWindow(this);
         stepEditorWin = new StepEditorWindow(this);
         resourceManagementWin = new ResourceManagementWindow(this);
         
         createWin(stage, mainWin);
         entryWinStage = createWin(entryWin);
         projSchedWinStage = createWin(projSchedWin);
+        graphEditorWinStage = createWin(graphEditorWin);
         stepEditorWinStage = createWin(stepEditorWin);
         resourceManagementWinStage = createWin(resourceManagementWin);
         
@@ -106,6 +112,10 @@ public class ProjectManagerApplication extends Application {
 	public void calendarEntryOpened(CalendarEntry entry) {
 		entryWin.setCurrentEntry(entry);
 		entryWinStage.show();
+	}
+
+	public void graphEditorWinOpened() {
+		graphEditorWinStage.show();
 	}
 	
 	public void projSchedWinOpened(Project project) {

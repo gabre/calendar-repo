@@ -46,10 +46,18 @@ public class MainWindow extends Window implements Observer {
 		BorderPane mainPane = new BorderPane();
 		
 		HBox topButtons = new HBox(5);
-		
+
+		Button btnOpenProjectGraphEditor = new Button("Projektgráf-tervezõ");
 		Button btnOpenProjectStepEditor = new Button("Projektlépés-tervezõ");
 		Button btnOpenProjectScheduler = new Button("Projektütemezõ");
 		Button btnOpenResourceManager = new Button("Erõforráskezelõ");
+		
+		btnOpenProjectGraphEditor.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				openGraphEditor();
+			}
+		});
 		
 		btnOpenProjectScheduler.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -66,6 +74,7 @@ public class MainWindow extends Window implements Observer {
 		});
 		
 		topButtons.getChildren().addAll(
+				btnOpenProjectGraphEditor,
 				btnOpenProjectStepEditor,
 				btnOpenProjectScheduler,
 				btnOpenResourceManager);
@@ -91,6 +100,10 @@ public class MainWindow extends Window implements Observer {
 		BorderPane.setMargin(entryList, new Insets(5));
 		
 		return mainPane;
+	}
+	
+	private void openGraphEditor() {
+		app.graphEditorWinOpened();	
 	}
 	
 	private void openProjectScheduler() {
