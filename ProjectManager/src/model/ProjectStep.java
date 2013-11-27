@@ -2,56 +2,50 @@ package model;
 
 public class ProjectStep {
 	
-	private String name;
-	private int duration;
-	private String description;
+	private Descriptor desc;	
 
 	public ProjectStep()
 	{
-		this("", 0, "");
+		this(new Descriptor("", 0, "", 0));
 	}
 	
-	public ProjectStep(String name, int duration, String description)
+	public ProjectStep(Descriptor desc)
 	{
-		this.name = name;
-		this.duration = duration;
-		this.description = description;
+		this.desc = desc;
 	}
 	
-	public void setParams(String newname, int duration, String description)
+	public void setParams(Descriptor desc)
 	{
-		this.name = newname;
-		this.duration = duration;
-		this.description = description;
+		this.desc = desc;
 	}
 
 	public String getName()
 	{
-		return name;
+		return desc.getName();
 	}
 	
 	public int getDuration()
 	{
-		return duration;
+		return desc.getDuration();
 	}
 	
 	public String getDescription()
 	{
-		return description;
+		return desc.getDescription();
 	}
 	
 	public void setName(String name)
 	{
-		this.name = name;
+		desc.setName(name);
 	}
 	
 	public void setDuration(int duration)
 	{
-		this.duration = duration;
+		desc.setDuration(duration);
 	}
 	
 	public void setDescription(String description)
 	{
-		this.description = description;
+		desc.setDescription(description);
 	}
 }

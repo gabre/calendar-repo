@@ -2,6 +2,7 @@ package model;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 
 import javafx.collections.FXCollections;
@@ -17,7 +18,7 @@ public class Model extends Observable {
 	};
 	
 	private ObservableList<CalendarEntry> entries = FXCollections.observableArrayList();
-	private ObservableMap<String, Project> projects = FXCollections.observableHashMap();
+	private ObservableList<Project> projects = FXCollections.observableArrayList();
 	
 	public void addEntry(CalendarEntry e) {
 		entries.add(e);
@@ -44,36 +45,34 @@ public class Model extends Observable {
 		
 	}
 	
-	public void addProjectStep(String pname, String name, int duration, String description) {
-		 projects.get(pname).addStep(new ProjectStep(name, duration, description));
-	}
-	
-	public void deleteProjectStep(String pname, ProjectStep step) {
-		projects.get(pname).deleteStep(step);
-	}
-	
-	public void editProjectStep(String pname, ProjectStep oldStep, ProjectStep newStep)
+	public HashMap<String, Number> calculateMetrics(Project p)
 	{
-		projects.get(pname).editStep(oldStep, newStep);
+		HashMap<String, Number> metrics = new HashMap<>();
+		metrics.put("Average duration", calculateAvgDuration(p));
+		metrics.put("Sum of duration", calculateSumDuration(p));
+		return metrics;
+	}
+	
+	private int calculateSumDuration(Project p) {
+		int sum = 0;
+		for(ProjectStep item : p.getAllSteps())
+		{
+			sum += item.getDuration();
+		}
+		return sum;
 	}
 
-	public ObservableList<ProjectStep> getProjectSteps(String name)
-	{
-		return projects.get(name).getAllSteps();
+	private double calculateAvgDuration(Project p) {
+		return calculateSumDuration(p) / p.getAllSteps().size();
 	}
 
-	public Project getProject(String name)
+	public void addProject(Project proj)
 	{
-		return projects.get(name);
+		projects.add(proj);
 	}
 	
-	public HashMap<String, Integer> calculateMetrics(Project p)
-	{
-		return new HashMap<String, Integer>();
+	public ObservableList<Project> getProjects() {
+		return projects;
 	}
 	
-	public void addProject(String name)
-	{
-		projects.put(name, new Project(name));
-	}
 }

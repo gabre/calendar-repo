@@ -87,7 +87,7 @@ public class MainWindow extends Window implements Observer {
 	}
 	
 	private void openProjectScheduler() {
-		app.projSchedWinOpened();		
+		app.projSchedWinOpened(app.getModel().getProjects().get(0));	
 	}
 	
 	/*

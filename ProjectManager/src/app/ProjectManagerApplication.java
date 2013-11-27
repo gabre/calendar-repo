@@ -10,6 +10,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.CalendarEntry;
+import model.Descriptor;
 import model.Model;
 import model.Project;
 import model.ProjectStep;
@@ -50,10 +51,11 @@ public class ProjectManagerApplication extends Application {
         model.addEntry(new CalendarEntry("Elsõ", "Meg kell etetni a macskát.", new Date(113, 1, 1)));
         model.addEntry(new CalendarEntry("Második", "Meg kell itatni az iguánát.", new Date(113, 2, 2)));
         model.addEntry(new CalendarEntry("Harmadik", "Meg kell óvni az iguánát a macskától.", new Date(113, 3, 3)));
-        model.addProject("almafa"); 
-        model.addProjectStep("almafa", "step1", 10, "some description");
-        model.addProjectStep("almafa", "step2", 0, "blah blah blah some description");
-        model.addProjectStep("almafa", "step3", 40, "");
+        Project almafa = new Project("almafa");
+        model.addProject(almafa); 
+        almafa.addStep(new ProjectStep(new Descriptor("step1", 10, "some description", 0)));
+        almafa.addStep(new ProjectStep(new Descriptor("step2", 0, "blah blah blah some description", 0)));
+        almafa.addStep(new ProjectStep(new Descriptor("step3", 40, "", 0)));
         
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
@@ -93,7 +95,8 @@ public class ProjectManagerApplication extends Application {
 		entryWinStage.show();
 	}
 	
-	public void projSchedWinOpened() {
+	public void projSchedWinOpened(Project project) {
+		projSchedWin.setCurrentProject(project);
 		projSchedWinStage.show();
 	}	
 	

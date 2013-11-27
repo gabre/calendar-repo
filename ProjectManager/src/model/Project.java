@@ -38,4 +38,16 @@ public class Project {
 	public String getName() {
 		return name;
 	}
+
+	public int exchangeSteps(ProjectStep step, int indexOffset) {
+		int index = steps.indexOf(step);
+		int exchangeIndex = index + indexOffset;
+		if(exchangeIndex >= 0 && exchangeIndex < steps.size())
+		{
+			steps.set(index, steps.get(exchangeIndex));
+			steps.set(exchangeIndex, step);
+			return exchangeIndex;
+		}
+		return index;
+	}
 }

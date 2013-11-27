@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import model.CalendarEntry;
+import model.Descriptor;
 import model.Project;
 import model.ProjectStep;
 import app.ProjectManagerApplication;
@@ -64,13 +65,12 @@ public class StepEditorWindow extends Window {
 		int duration = Integer.parseInt(durationField.getText());
 		if(justUpdate)
 		{
-			ProjectStep newStep = new ProjectStep(name, duration, description);
-			app.getModel().editProjectStep(currentProject.getName(), currentStep, newStep);
+			ProjectStep newStep = new ProjectStep(new Descriptor(name, duration, description, 0));
+			currentProject.editStep(currentStep, newStep);
 		} else
 		{
-			app.getModel().addProjectStep(currentProject.getName(), name, duration, description);
+			currentProject.addStep(new ProjectStep(new Descriptor(name, duration, description, 0)));
 		}
-		int l = app.getModel().getProject("almafa").getAllSteps().size();
 		app.stepEditorWinClosed();
 	}
 
