@@ -58,6 +58,13 @@ public class MainWindow extends Window implements Observer {
 			}
 		});
 		
+		btnOpenResourceManager.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				openResourceManagement();
+			}
+		});
+		
 		topButtons.getChildren().addAll(
 				btnOpenProjectStepEditor,
 				btnOpenProjectScheduler,
@@ -94,6 +101,10 @@ public class MainWindow extends Window implements Observer {
 	private void closeProjectScheduler() {
 		app.projSchedWinClosed();		
 	} */
+
+	private void openResourceManagement() {
+		app.resourceManagementOpened();
+	}
 
 	private void entryListMouseHandler(MouseEvent event) {
 		if (event.getButton().equals(MouseButton.PRIMARY) &&
