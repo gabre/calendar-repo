@@ -186,7 +186,7 @@ public class MainWindow extends Window implements Observer {
 			public void handle(ActionEvent event) {
 				if (!projectList.getSelectionModel().isEmpty()) {
 					Project sel = projectList.getSelectionModel().getSelectedItem();
-					app.getModel().getProjects().remove(sel);
+					app.getModel().removeProject(sel);
 				}
 			}
 		});

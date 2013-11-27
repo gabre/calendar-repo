@@ -72,6 +72,19 @@ public class Model extends Observable {
 		projects.add(proj);
 	}
 	
+	public void removeProject(Project proj) {
+		Iterator<CalendarEntry> iter = entries.iterator();
+		while (iter.hasNext()) {
+			CalendarEntry entry = iter.next();
+			if (entry.getProject() == proj) {
+				iter.remove();
+			}
+		}
+		
+		proj.getAllSteps().clear();
+		projects.remove(proj);
+	}
+	
 	public ObservableList<Project> getProjects() {
 		return projects;
 	}

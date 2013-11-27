@@ -3,17 +3,25 @@ package model;
 import java.util.Date;
 
 public class CalendarEntry {
-	// TODO add an optional reference to a Project if the entry belongs to one
-	
 	private String name;
 	private String description;
-	private Date date;	
+	private Date date;
+	private Project project;
 	
 	public CalendarEntry(String name, String description, Date date) {
 		this.name = name;
 		this.description = description;
 		this.date = date;
 	}
+
+	public CalendarEntry(String name, String description, Date date,
+			Project project) {
+		this.name = name;
+		this.description = description;
+		this.date = date;
+		this.project = project;
+	}
+
 
 	public String getName() {
 		return name;
@@ -25,6 +33,10 @@ public class CalendarEntry {
 	
 	public Date getDate() {
 		return date;
+	}
+
+	public Project getProject() {
+		return project;
 	}
 
 }
