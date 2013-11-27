@@ -14,11 +14,6 @@ public class ProjectStep {
 		this.desc = desc;
 	}
 	
-	public void setParams(Descriptor desc)
-	{
-		this.desc = desc;
-	}
-
 	public String getName()
 	{
 		return desc.getName();

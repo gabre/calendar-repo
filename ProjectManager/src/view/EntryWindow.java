@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import model.CalendarEntry;
+import model.Project;
 import app.ProjectManagerApplication;
 
 public class EntryWindow extends Window {
@@ -28,6 +29,7 @@ public class EntryWindow extends Window {
 	private TextField dateField = new TextField();
 	private TextField nameField = new TextField();
 	private TextField descriptionField = new TextField();
+	private TextField projectField = new TextField();
 	
 	private Button submitButton = new Button("OK");
 	private Button resetButton = new Button("Visszaállít");
@@ -81,9 +83,12 @@ public class EntryWindow extends Window {
 		gridPane.setHgap(15);
 		gridPane.setVgap(5);
 		
-		gridPane.addRow(0, new Text("Dátum:"),  dateField);
-		gridPane.addRow(1, new Text("Név:"),    nameField);
-		gridPane.addRow(2, new Text("Leírás:"), descriptionField);
+		gridPane.addRow(0, new Text("Dátum:"),   dateField);
+		gridPane.addRow(1, new Text("Név:"),     nameField);
+		gridPane.addRow(2, new Text("Leírás:"),  descriptionField);
+		gridPane.addRow(3, new Text("Projekt:"), projectField);
+		
+		projectField.setEditable(false);
 		
 		HBox buttons = new HBox();
 		buttons.setSpacing(5);
@@ -108,6 +113,8 @@ public class EntryWindow extends Window {
 		dateField.setText(dateFormat.format(currentEntry.getDate()));
 		nameField.setText(currentEntry.getName());
 		descriptionField.setText(currentEntry.getDescription());
+		Project pr = currentEntry.getProject();
+		projectField.setText(pr == null ? "-" : pr.getName());
 	}
 	
 	private void validateDateField(String str) {

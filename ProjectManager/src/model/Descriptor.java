@@ -15,6 +15,16 @@ public class Descriptor {
 		this.difficulty = difficulty;
 	}
 	
+	public Descriptor(String name, int duration, String description,
+			int difficulty, String neededCompetence, int cost) {
+		this.name = name;
+		this.duration = duration;
+		this.description = description;
+		this.difficulty = difficulty;
+		this.neededCompetence = neededCompetence;
+		this.cost = cost;
+	}
+
 	public String getNeededCompetence() {
 		return neededCompetence;
 	}

@@ -63,12 +63,26 @@ public class Model extends Observable {
 	}
 
 	private double calculateAvgDuration(Project p) {
-		return calculateSumDuration(p) / p.getAllSteps().size();
+		int size = p.getAllSteps().size();
+		return size == 0 ? 0 : calculateSumDuration(p) / size;
 	}
 
 	public void addProject(Project proj)
 	{
 		projects.add(proj);
+	}
+	
+	public void removeProject(Project proj) {
+		Iterator<CalendarEntry> iter = entries.iterator();
+		while (iter.hasNext()) {
+			CalendarEntry entry = iter.next();
+			if (entry.getProject() == proj) {
+				iter.remove();
+			}
+		}
+		
+		proj.getAllSteps().clear();
+		projects.remove(proj);
 	}
 	
 	public ObservableList<Project> getProjects() {
