@@ -1,5 +1,6 @@
 package app;
  
+import java.sql.SQLException;
 import java.util.Date;
 
 import javafx.application.Application;
@@ -56,8 +57,14 @@ public class ProjectManagerApplication extends Application {
     }
 
 	@Override
-    public void start(Stage stage) throws Exception {
-        model = new Model();
+    public void start(Stage stage) {
+		try {
+	        model = new Model();
+	        dataManager = new DataManager();
+		} catch (Exception ex) {
+			System.exit(1);
+		}
+        
         model.addEntry(new CalendarEntry("Elsõ", "Meg kell etetni a macskát.", new Date(113, 1, 1)));
         model.addEntry(new CalendarEntry("Második", "Meg kell itatni az iguánát.", new Date(113, 2, 2)));
         model.addEntry(new CalendarEntry("Harmadik", "Meg kell óvni az iguánát a macskától.", new Date(113, 3, 3)));
@@ -67,8 +74,6 @@ public class ProjectManagerApplication extends Application {
         almafa.addStep(new ProjectStep(new Descriptor("step2", 0, "blah blah blah some description", 0)));
         almafa.addStep(new ProjectStep(new Descriptor("step3", 40, "", 0)));
 
-        dataManager = new DataManager();
-        
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
         projSchedWin = new ProjectSchedulerWindow(this);
