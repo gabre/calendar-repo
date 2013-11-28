@@ -1,5 +1,10 @@
 package model;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +24,15 @@ public class Model extends Observable {
 	
 	private ObservableList<CalendarEntry> entries = FXCollections.observableArrayList();
 	private ObservableList<Project> projects = FXCollections.observableArrayList();
+	
+	private Connection connection;
+	
+	public Model() throws SQLException, ClassNotFoundException {
+		Class.forName("org.sqlite.JDBC");
+		connection = DriverManager.getConnection("jdbc:sqlite:CalendarDatabase.db;");
+		createTables();
+		loadFromDb();
+	}
 	
 	public void addEntry(CalendarEntry e) {
 		entries.add(e);
@@ -87,6 +101,45 @@ public class Model extends Observable {
 	
 	public ObservableList<Project> getProjects() {
 		return projects;
+	}
+	
+	private void createTables() {
+		try {
+			Statement s = connection.createStatement();
+			s.execute(
+					"CREATE TABLE IF NOT EXISTS Projects (" +
+						"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+						"Name VARCHAR(255)" +
+					")"
+					);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private void loadFromDb() {
+		try {
+			Statement s = connection.createStatement();
+			ResultSet res = s.executeQuery("SELECT Id, Name FROM Projects");
+			while (res.next()) {
+				Project proj = new Project(res.getString("Name"));
+				projects.add(proj);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void saveToDb() {
+		try {
+			Statement s = connection.createStatement();
+			s.execute("DELETE FROM Projects");
+			for (Project proj : projects) {
+				s.execute("INSERT INTO Projects (Name) VALUES ('" + proj.getName() + "')");
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 }

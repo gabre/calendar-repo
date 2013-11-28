@@ -64,15 +64,6 @@ public class ProjectManagerApplication extends Application {
 		} catch (Exception ex) {
 			System.exit(1);
 		}
-        
-        model.addEntry(new CalendarEntry("Elsõ", "Meg kell etetni a macskát.", new Date(113, 1, 1)));
-        model.addEntry(new CalendarEntry("Második", "Meg kell itatni az iguánát.", new Date(113, 2, 2)));
-        model.addEntry(new CalendarEntry("Harmadik", "Meg kell óvni az iguánát a macskától.", new Date(113, 3, 3)));
-        Project almafa = new Project("almafa");
-        model.addProject(almafa); 
-        almafa.addStep(new ProjectStep(new Descriptor("step1", 10, "some description", 0)));
-        almafa.addStep(new ProjectStep(new Descriptor("step2", 0, "blah blah blah some description", 0)));
-        almafa.addStep(new ProjectStep(new Descriptor("step3", 40, "", 0)));
 
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
@@ -92,6 +83,7 @@ public class ProjectManagerApplication extends Application {
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
+				model.saveToDb();
 				Platform.exit();
 			}
         });
