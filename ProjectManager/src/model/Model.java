@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
@@ -123,6 +124,14 @@ public class Model extends Observable {
 						"Cost INTEGER" +
 					")"
 					);
+			s.execute(
+					"CREATE TABLE IF NOT EXISTS Entries (" +
+						"ProjectId INTEGER," +
+						"Name VARCHAR(255)," +
+						"Description VARCHAR(255)," +
+						"Date INTEGER" +
+					")"
+					);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -151,6 +160,21 @@ public class Model extends Observable {
 				step.setCost(res.getInt("Cost"));
 				proj.addStep(step);
 			}
+			
+			res = s.executeQuery("SELECT ProjectId, Name, Description, Date FROM Entries");
+			while (res.next()) {
+				if (res.getObject("ProjectId") == null) {
+					entries.add(new CalendarEntry(res.getString("Name"),
+							                      res.getString("Description"),
+							                      new Date(res.getLong("Date"))));
+				} else {
+					entries.add(new CalendarEntry(res.getString("Name"),
+		                                          res.getString("Description"),
+		                                          new Date(res.getLong("Date")),
+		                                          projs.get(res.getInt("ProjectId"))));
+				}
+			}
+			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -161,6 +185,7 @@ public class Model extends Observable {
 			Statement s = connection.createStatement();
 			s.execute("DELETE FROM Projects");
 			s.execute("DELETE FROM ProjectSteps");
+			s.execute("DELETE FROM Entries");
 			HashMap<Project, Integer> projIds = new HashMap<>();
 			int id = 0;
 			for (Project proj : projects) {
@@ -180,6 +205,23 @@ public class Model extends Observable {
 				}
 				projIds.put(proj, id);
 				id++;
+			}
+			
+			for (CalendarEntry entry : entries) {
+				if (entry.getProject() == null) {
+					s.execute(String.format("INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES (" +
+				                            "NULL, '%s', '%s', %d)",
+				                            entry.getName(),
+				                            entry.getDescription(),
+				                            entry.getDate().getTime()));
+				} else {
+					s.execute(String.format("INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES (" +
+                            "%d, '%s', '%s', %d)",
+                            projIds.get(entry.getProject()),
+                            entry.getName(),
+                            entry.getDescription(),
+                            entry.getDate().getTime()));
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
