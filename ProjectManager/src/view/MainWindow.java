@@ -30,7 +30,7 @@ import model.CalendarEntry;
 import model.Project;
 import app.ProjectManagerApplication;
 
-public class MainWindow extends Window implements Observer {
+public class MainWindow extends Window {
 	
 	private ListView<Project> projectList;
 	private TextField newProjectNameField;
@@ -39,12 +39,6 @@ public class MainWindow extends Window implements Observer {
 	public MainWindow(ProjectManagerApplication app) {
 		super();
 		this.app = app;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

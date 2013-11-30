@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class CompetenceWindow extends Window implements Observer {
+public class CompetenceWindow extends Window {
 
 	private String windowTitle;
 	private BorderPane mainPane;
@@ -27,12 +27,6 @@ public class CompetenceWindow extends Window implements Observer {
 		isConfirmed = false;
 		if (!value.isEmpty())
 			competenceName.setText(value);
-	}
-	
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

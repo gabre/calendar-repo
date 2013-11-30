@@ -15,7 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-public class Model extends Observable {
+public class Model {
 	private static final Comparator<CalendarEntry> entryComparator = new Comparator<CalendarEntry>() {
 		@Override
 		public int compare(CalendarEntry e1, CalendarEntry e2) {
