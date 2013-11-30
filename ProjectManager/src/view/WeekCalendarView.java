@@ -7,10 +7,13 @@ import java.util.GregorianCalendar;
 import model.CalendarEntry;
 import app.ProjectManagerApplication;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -75,12 +78,14 @@ public class WeekCalendarView extends GridPane {
 		for (VBox box : dayBoxes) {
 			box.getChildren().clear();
 		}
-		for (CalendarEntry entry : app.getModel().getCalendarEntries()) {
+		for (final CalendarEntry entry : app.getModel().getCalendarEntries()) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(entry.getDate());
 			long diff = (cal.getTimeInMillis() - firstDay.getTimeInMillis()) / (1000 * 86400);
 			if (diff >= 0 && diff < 7) {
-				dayBoxes[(int) diff].getChildren().add(new Label(entry.getName()));
+				Label lab = new Label(entry.getName());
+				lab.setContextMenu(new CalendarEntryContextMenu(app, entry));
+				dayBoxes[(int) diff].getChildren().add(lab);
 			}
 		}
 	}
