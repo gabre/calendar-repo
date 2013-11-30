@@ -108,8 +108,19 @@ public class Model extends Observable {
 			Statement s = connection.createStatement();
 			s.execute(
 					"CREATE TABLE IF NOT EXISTS Projects (" +
-						"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+						"Id INTEGER PRIMARY KEY," +
 						"Name VARCHAR(255)" +
+					")"
+					);
+			s.execute(
+					"CREATE TABLE IF NOT EXISTS ProjectSteps (" +
+						"ProjectId INTEGER," +
+						"Name VARCHAR(255)," +
+						"Duration INTEGER," +
+						"Description VARCHAR(255)," +
+						"Difficulty INTEGER," +
+						"NeededCompetence VARCHAR(255)," +
+						"Cost INTEGER" +
 					")"
 					);
 		} catch (SQLException ex) {
@@ -121,9 +132,24 @@ public class Model extends Observable {
 		try {
 			Statement s = connection.createStatement();
 			ResultSet res = s.executeQuery("SELECT Id, Name FROM Projects");
+			HashMap<Integer, Project> projs = new HashMap<>();
 			while (res.next()) {
 				Project proj = new Project(res.getString("Name"));
 				projects.add(proj);
+				projs.put(res.getInt("Id"), proj);
+			}
+			
+			res = s.executeQuery("SELECT * FROM ProjectSteps");
+			while (res.next()) {
+				Project proj = projs.get(res.getInt("ProjectId"));
+				ProjectStep step = new ProjectStep();
+				step.setName(res.getString("Name"));
+				step.setDuration(res.getInt("Duration"));
+				step.setDescription(res.getString("Description"));
+				step.setDifficulty(res.getInt("Difficulty"));
+				step.setNeededCompetence(res.getString("NeededCompetence"));
+				step.setCost(res.getInt("Cost"));
+				proj.addStep(step);
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -134,8 +160,26 @@ public class Model extends Observable {
 		try {
 			Statement s = connection.createStatement();
 			s.execute("DELETE FROM Projects");
+			s.execute("DELETE FROM ProjectSteps");
+			HashMap<Project, Integer> projIds = new HashMap<>();
+			int id = 0;
 			for (Project proj : projects) {
-				s.execute("INSERT INTO Projects (Name) VALUES ('" + proj.getName() + "')");
+				s.execute(String.format("INSERT INTO Projects (Id, Name) VALUES (%d, '%s')",
+						                id, proj.getName()));
+				for (ProjectStep step : proj.getAllSteps()) {
+					s.execute(String.format("INSERT INTO ProjectSteps " +
+				                            "(ProjectId, Name, Duration, Description, Difficulty, NeededCompetence, Cost) VALUES (" +
+							                "%d, '%s', %d, '%s', %d, '%s', %d)",
+							                id,
+							                step.getName(),
+							                step.getDuration(),
+							                step.getDescription(),
+							                step.getDifficulty(),
+							                step.getNeededCompetence(),
+							                step.getCost()));
+				}
+				projIds.put(proj, id);
+				id++;
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
