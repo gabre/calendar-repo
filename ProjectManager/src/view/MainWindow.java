@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -53,13 +54,20 @@ public class MainWindow extends Window implements Observer {
 
 		Pane menuPane = createMenuPane();
 		Pane projectPane = createProjectPane();
+		projectPane.setStyle("-fx-border-width: 1; -fx-border-color: gray;");
+		projectPane.setPadding(new Insets(5));
+		projectPane.setPrefWidth(150);
+		StackPane centerPane = new StackPane();
+		centerPane.getChildren().add(new WeekCalendarView(app));
+		centerPane.setPrefSize(640, 360);
 		
 		mainPane.setTop(menuPane);
 		mainPane.setLeft(projectPane);
-		mainPane.setCenter(new ListCalendarView(app));
+		mainPane.setCenter(centerPane);
 		
 		BorderPane.setMargin(menuPane, new Insets(0, 0, 5, 0));
-		BorderPane.setMargin(projectPane, new Insets(0, 5, 0, 0));
+		BorderPane.setMargin(projectPane, new Insets(5));
+		BorderPane.setMargin(centerPane, new Insets(0, 0, 0, 5));
 		
 		mainPane.setPadding(new Insets(5));
 		return mainPane;
@@ -89,12 +97,11 @@ public class MainWindow extends Window implements Observer {
 	private Pane createMenuPane() {
 		HBox topButtons = new HBox(5);
 
-		Button btnOpenProjectGraphEditor = new Button("Projektgráf-tervezõ");
 		Button btnOpenProjectStepEditor = new Button("Projektlépés-tervezõ");
 		Button btnOpenProjectScheduler = new Button("Projektütemezõ");
 		Button btnOpenResourceManager = new Button("Erõforráskezelõ");
 
-		btnOpenProjectGraphEditor.setOnAction(new EventHandler<ActionEvent>() {
+		btnOpenProjectStepEditor.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				openGraphEditor();
@@ -116,7 +123,6 @@ public class MainWindow extends Window implements Observer {
 		});
 		
 		topButtons.getChildren().addAll(
-				btnOpenProjectGraphEditor,
 				btnOpenProjectStepEditor,
 				btnOpenProjectScheduler,
 				btnOpenResourceManager);
