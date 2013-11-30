@@ -12,6 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
@@ -64,6 +65,7 @@ public class ListCalendarView extends VBox {
 		});
 		
 		getChildren().addAll(listView, buttons);
+		VBox.setVgrow(listView, Priority.ALWAYS);
 	}
 
 }

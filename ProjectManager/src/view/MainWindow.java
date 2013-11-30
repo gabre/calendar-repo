@@ -4,12 +4,15 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -31,6 +34,7 @@ public class MainWindow extends Window implements Observer {
 	
 	private ListView<Project> projectList;
 	private TextField newProjectNameField;
+	private StackPane centerPane;
 
 	public MainWindow(ProjectManagerApplication app) {
 		super();
@@ -54,10 +58,10 @@ public class MainWindow extends Window implements Observer {
 
 		Pane menuPane = createMenuPane();
 		Pane projectPane = createProjectPane();
-		projectPane.setStyle("-fx-border-width: 1; -fx-border-color: gray;");
+		projectPane.setStyle("-fx-border-width: 1; -fx-border-color: lightgray;");
 		projectPane.setPadding(new Insets(5));
 		projectPane.setPrefWidth(150);
-		StackPane centerPane = new StackPane();
+		centerPane = new StackPane();
 		centerPane.getChildren().add(new WeekCalendarView(app));
 		centerPane.setPrefSize(640, 360);
 		
@@ -66,7 +70,6 @@ public class MainWindow extends Window implements Observer {
 		mainPane.setCenter(centerPane);
 		
 		BorderPane.setMargin(menuPane, new Insets(0, 0, 5, 0));
-		BorderPane.setMargin(projectPane, new Insets(5));
 		BorderPane.setMargin(centerPane, new Insets(0, 0, 0, 5));
 		
 		mainPane.setPadding(new Insets(5));
@@ -100,6 +103,8 @@ public class MainWindow extends Window implements Observer {
 		Button btnOpenProjectStepEditor = new Button("Projektlépés-tervezõ");
 		Button btnOpenProjectScheduler = new Button("Projektütemezõ");
 		Button btnOpenResourceManager = new Button("Erõforráskezelõ");
+		final ComboBox<String> cbCalendarView = new ComboBox<>(FXCollections.observableArrayList("Heti nézet", "Havi nézet", "Napló nézet"));
+		cbCalendarView.getSelectionModel().select(0);
 
 		btnOpenProjectStepEditor.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -122,10 +127,35 @@ public class MainWindow extends Window implements Observer {
 			}
 		});
 		
+		cbCalendarView.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Node view;
+				switch (cbCalendarView.getSelectionModel().getSelectedIndex()) {
+				case 0:
+					view = new WeekCalendarView(app);
+					break;
+				case 1:
+					view = null;
+					break;
+				case 2:
+					view = new ListCalendarView(app);
+					break;
+				default:
+					view = null;
+				}
+				if (view != null) {
+					centerPane.getChildren().clear();
+					centerPane.getChildren().add(view);
+				}
+			}
+		});
+		
 		topButtons.getChildren().addAll(
 				btnOpenProjectStepEditor,
 				btnOpenProjectScheduler,
-				btnOpenResourceManager);
+				btnOpenResourceManager,
+				cbCalendarView);
 		
 		return topButtons;
 	}
