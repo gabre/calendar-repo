@@ -1,5 +1,6 @@
 package view;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -23,10 +25,14 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
 public class WeekCalendarView extends GridPane {
+	private static final String[] shortDayNames = new String[] {null, "v", "h", "k", "sze", "cs", "p", "szo"};
+	
 	private ProjectManagerApplication app;
 	private Calendar firstDay;
 	
 	private VBox dayBoxes[] = new VBox[7];
+	private Label dayLabels[] = new Label[7];
+	private Label yearLabel = new Label();
 	
 	public WeekCalendarView(final ProjectManagerApplication app) {
 		super();
@@ -39,16 +45,18 @@ public class WeekCalendarView extends GridPane {
 		});
 		firstDay = firstDayOfCurrentWeek();
 		
-		String dayNames[] = {"Hétfõ", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"};
-		for (int i = 0; i < dayNames.length; ++i) {
+		add(yearLabel, 0, 0);
+		for (int i = 0; i < dayLabels.length; ++i) {
+			dayLabels[i] = new Label();
+			dayLabels[i].getStyleClass().add("calendar-day-label");
 			ColumnConstraints cc = new ColumnConstraints();
 			cc.setHgrow(Priority.ALWAYS);
 			cc.setPercentWidth(100.0 / 7.0);
 			getColumnConstraints().add(cc);
-			add(new Label(dayNames[i]), i, 0);
+			add(dayLabels[i], i, 1);
 			dayBoxes[i] = new VBox(5);
 			dayBoxes[i].getStyleClass().add("calendar-day");
-			add(dayBoxes[i], i, 1);
+			add(dayBoxes[i], i, 2);
 			
 			final int j = i;
 			dayBoxes[i].setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -65,7 +73,20 @@ public class WeekCalendarView extends GridPane {
 		}
 		RowConstraints rc = new RowConstraints();
 		rc.setVgrow(Priority.ALWAYS);
-		getRowConstraints().addAll(new RowConstraints(), rc);
+		getRowConstraints().addAll(new RowConstraints(), new RowConstraints(), rc);
+		
+		setOnScroll(new EventHandler<ScrollEvent>() {
+			@Override
+			public void handle(ScrollEvent event) {
+				if (event.getDeltaY() < 0) {
+					firstDay.add(Calendar.DATE, 7);
+					addEntries();
+				} else if (event.getDeltaY() > 0) {
+					firstDay.add(Calendar.DATE, -7);
+					addEntries();
+				}
+			}	
+		});
 		
 		addEntries();
 		
@@ -73,6 +94,7 @@ public class WeekCalendarView extends GridPane {
 	}
 	
 	private void addEntries() {
+		yearLabel.setText(Integer.toString(firstDay.get(Calendar.YEAR)));
 		for (VBox box : dayBoxes) {
 			box.getChildren().clear();
 		}
@@ -86,6 +108,14 @@ public class WeekCalendarView extends GridPane {
 				lab.setContextMenu(new CalendarEntryContextMenu(app, entry));
 				dayBoxes[(int) diff].getChildren().add(lab);
 			}
+		}
+		Calendar cal = (Calendar) firstDay.clone();
+		for (Label lab : dayLabels) {
+			lab.setText(String.format("%02d. %02d., %s",
+					cal.get(Calendar.MONTH) + 1,
+					cal.get(Calendar.DAY_OF_MONTH),
+					shortDayNames[cal.get(Calendar.DAY_OF_WEEK)]));
+			cal.add(Calendar.DATE, 1);
 		}
 	}
 	
