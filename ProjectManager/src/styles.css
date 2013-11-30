@@ -1,17 +1,10 @@
-.header {
-    -fx-padding: 20;
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #007 0%, #00d 100%);
-    -fx-text-fill: white;
+.calendar-day {
+	-fx-background-color: linear-gradient(to bottom, #b0c1d2, white);
 }
 
-.header .title {
-    -fx-font: 18pt "Tahoma Bold";
-}
-
-.header .tag-line {
-    -fx-font: 12pt "Tahoma Bold";
-}
-
-.body {
-    -fx-padding: 20;
+.calendar-event {
+	-fx-border-color: lightgray;
+	-fx-border-width: 1;
+	-fx-background-color: navajowhite;
+	-fx-label-padding: 3;
 }

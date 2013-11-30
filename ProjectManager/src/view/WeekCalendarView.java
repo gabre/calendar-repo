@@ -47,9 +47,7 @@ public class WeekCalendarView extends GridPane {
 			getColumnConstraints().add(cc);
 			add(new Label(dayNames[i]), i, 0);
 			dayBoxes[i] = new VBox(5);
-			dayBoxes[i].setPadding(new Insets(2, 5, 2, 5));
-			dayBoxes[i].setMinWidth(50);
-			dayBoxes[i].setStyle("-fx-border-color: black; -fx-border-width: 1;");
+			dayBoxes[i].getStyleClass().add("calendar-day");
 			add(dayBoxes[i], i, 1);
 			
 			final int j = i;
@@ -84,6 +82,7 @@ public class WeekCalendarView extends GridPane {
 			long diff = (cal.getTimeInMillis() - firstDay.getTimeInMillis()) / (1000 * 86400);
 			if (diff >= 0 && diff < 7) {
 				Label lab = new Label(entry.getName());
+				lab.getStyleClass().add("calendar-event");
 				lab.setContextMenu(new CalendarEntryContextMenu(app, entry));
 				dayBoxes[(int) diff].getChildren().add(lab);
 			}
