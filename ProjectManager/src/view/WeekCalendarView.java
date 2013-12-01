@@ -28,52 +28,67 @@ public class WeekCalendarView extends GridPane {
 	private static final String[] shortDayNames = new String[] {null, "v", "h", "k", "sze", "cs", "p", "szo"};
 	
 	private ProjectManagerApplication app;
+	private int weeks;
 	private Calendar firstDay;
 	
-	private VBox dayBoxes[] = new VBox[7];
-	private Label dayLabels[] = new Label[7];
+	private VBox dayBoxes[];
+	private Label dayLabels[];
 	private Label yearLabel = new Label();
 	
-	public WeekCalendarView(final ProjectManagerApplication app) {
+	public WeekCalendarView(final ProjectManagerApplication app, int weeks) {
 		super();
 		this.app = app;
+		this.weeks = weeks;
+		
+		dayBoxes = new VBox[7 * weeks];
+		dayLabels = new Label[7 * weeks];
+		
 		app.getModel().getCalendarEntries().addListener(new ListChangeListener<CalendarEntry>() {
 			@Override
 			public void onChanged(ListChangeListener.Change<? extends CalendarEntry> event) {
 				addEntries();
 			}
 		});
-		firstDay = firstDayOfCurrentWeek();
+		firstDay = calculateFirstDay();
 		
 		add(yearLabel, 0, 0);
-		for (int i = 0; i < dayLabels.length; ++i) {
-			dayLabels[i] = new Label();
-			dayLabels[i].getStyleClass().add("calendar-day-label");
+		for (int i = 0; i < 7; ++i) {
 			ColumnConstraints cc = new ColumnConstraints();
 			cc.setHgrow(Priority.ALWAYS);
 			cc.setPercentWidth(100.0 / 7.0);
 			getColumnConstraints().add(cc);
-			add(dayLabels[i], i, 1);
-			dayBoxes[i] = new VBox(5);
-			dayBoxes[i].getStyleClass().add("calendar-day");
-			add(dayBoxes[i], i, 2);
 			
-			final int j = i;
-			dayBoxes[i].setOnMouseClicked(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent event) {
-					if (event.getButton().equals(MouseButton.PRIMARY)) {
-						Date date = new Date(firstDay.getTimeInMillis() + j * 1000 * 86400);
-						CalendarEntry entry = new CalendarEntry("Új esemény", "", date);
-						app.getModel().addEntry(entry);
-						app.calendarEntryOpened(entry);
+			for (int j = 0; j < weeks; ++j) {
+				final int k = i + 7 * j;
+				
+				dayLabels[k] = new Label();
+				dayLabels[k].getStyleClass().add("calendar-day-label");
+				add(dayLabels[k], i, 2 * j + 1);
+				
+				dayBoxes[k] = new VBox(5);
+				dayBoxes[k].getStyleClass().add("calendar-day");
+				add(dayBoxes[k], i, 2 * j + 2);
+				
+				dayBoxes[k].setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if (event.getButton().equals(MouseButton.PRIMARY)) {
+							Date date = new Date(firstDay.getTimeInMillis() + k * 1000 * 86400);
+							CalendarEntry entry = new CalendarEntry("Új esemény", "", date);
+							app.getModel().addEntry(entry);
+							app.calendarEntryOpened(entry);
+						}
 					}
-				}
-			});
+				});
+			}
 		}
-		RowConstraints rc = new RowConstraints();
-		rc.setVgrow(Priority.ALWAYS);
-		getRowConstraints().addAll(new RowConstraints(), new RowConstraints(), rc);
+		
+		getRowConstraints().add(new RowConstraints());
+		for (int i = 0; i < weeks; ++i) {
+			RowConstraints rc = new RowConstraints();
+			rc.setVgrow(Priority.ALWAYS);
+			getRowConstraints().addAll(new RowConstraints(), rc);
+		}
 		
 		setOnScroll(new EventHandler<ScrollEvent>() {
 			@Override
@@ -102,7 +117,7 @@ public class WeekCalendarView extends GridPane {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(entry.getDate());
 			long diff = (cal.getTimeInMillis() - firstDay.getTimeInMillis()) / (1000 * 86400);
-			if (diff >= 0 && diff < 7) {
+			if (diff >= 0 && diff < 7 * weeks) {
 				Label lab = new Label(entry.getName());
 				lab.getStyleClass().add("calendar-event");
 				lab.setContextMenu(new CalendarEntryContextMenu(app, entry));
@@ -119,7 +134,7 @@ public class WeekCalendarView extends GridPane {
 		}
 	}
 	
-	private Calendar firstDayOfCurrentWeek() {
+	private Calendar calculateFirstDay() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.clear(Calendar.MINUTE);

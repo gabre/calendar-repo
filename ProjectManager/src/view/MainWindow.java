@@ -56,7 +56,7 @@ public class MainWindow extends Window {
 		projectPane.setPadding(new Insets(5));
 		projectPane.setPrefWidth(150);
 		centerPane = new StackPane();
-		centerPane.getChildren().add(new WeekCalendarView(app));
+		centerPane.getChildren().add(new WeekCalendarView(app, 1));
 		centerPane.setPrefSize(640, 360);
 		
 		mainPane.setTop(menuPane);
@@ -127,10 +127,10 @@ public class MainWindow extends Window {
 				Node view;
 				switch (cbCalendarView.getSelectionModel().getSelectedIndex()) {
 				case 0:
-					view = new WeekCalendarView(app);
+					view = new WeekCalendarView(app, 1);
 					break;
 				case 1:
-					view = null;
+					view = new WeekCalendarView(app, 4);
 					break;
 				case 2:
 					view = new ListCalendarView(app);
