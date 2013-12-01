@@ -52,6 +52,7 @@ public class WeekCalendarView extends GridPane {
 		firstDay = calculateFirstDay();
 		
 		add(yearLabel, 0, 0);
+		yearLabel.getStyleClass().add("calendar-year-label");
 		for (int i = 0; i < 7; ++i) {
 			ColumnConstraints cc = new ColumnConstraints();
 			cc.setHgrow(Priority.ALWAYS);
