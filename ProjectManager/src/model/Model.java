@@ -227,5 +227,12 @@ public class Model {
 			ex.printStackTrace();
 		}
 	}
+
+	public void modifyProjectName(Project sel, String name) {
+		// TODO Auto-generated method stub
+		Project p = sel.clone();
+		p.setName(name);
+		projects.set(projects.indexOf(sel), p);
+	}
 	
 }

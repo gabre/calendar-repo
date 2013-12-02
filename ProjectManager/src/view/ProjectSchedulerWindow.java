@@ -20,11 +20,13 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
 public class ProjectSchedulerWindow extends Window {
 
@@ -67,6 +69,10 @@ public class ProjectSchedulerWindow extends Window {
 				"description"));
 		tView.getColumns().addAll(col1, col2, col3);
 		tView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		tView.getColumns().get(0).setPrefWidth(150);
+		tView.getColumns().get(1).setPrefWidth(100);
+		tView.getColumns().get(2).setPrefWidth(250);
+		tView.setPrefWidth(470);
 		/* ***** */
 
 		Button addButton = new Button("Add");
@@ -169,6 +175,7 @@ public class ProjectSchedulerWindow extends Window {
 			return;
 		}
 		Set<Entry<String, Number>> metricsSet = app.getModel().calculateMetrics(currentProject).entrySet();
+		metrics.getChildren().clear();
 		for( Entry<String, Number> m : metricsSet ) {
 			metrics.getChildren().add(new Label(m.getKey() + ": " + m.getValue().toString()));
 		}
@@ -186,7 +193,6 @@ public class ProjectSchedulerWindow extends Window {
 			app.showMessage("You have to select a project step to delete.");
 		} else {
 			currentProject.deleteStep(item);
-			;
 		}
 	}
 

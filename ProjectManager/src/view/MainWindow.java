@@ -76,7 +76,7 @@ public class MainWindow extends Window {
 	
 	private void openProjectScheduler() {
 		if (projectList.getSelectionModel().isEmpty()) {
-			return;
+			projectList.getSelectionModel().select(0);
 		}
 		
 		app.projSchedWinOpened(projectList.getSelectionModel().getSelectedItem());	
@@ -180,6 +180,7 @@ public class MainWindow extends Window {
 		
 		Button btnCreate = new Button("Új projekt");
 		Button btnDelete = new Button("Törlés");
+		Button btnRename = new Button("Átnevezés");
 		
 		btnCreate.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -201,8 +202,19 @@ public class MainWindow extends Window {
 			}
 		});
 		
+		btnRename.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				String name = newProjectNameField.getText();
+				if (!projectList.getSelectionModel().isEmpty() && !name.isEmpty()) {
+					Project sel = projectList.getSelectionModel().getSelectedItem();
+					app.getModel().modifyProjectName(sel, name);
+				}
+			}
+		});
+		
 		HBox innerBox = new HBox(5);
-		innerBox.getChildren().addAll(btnCreate, btnDelete);
+		innerBox.getChildren().addAll(btnCreate, btnDelete, btnRename);
 		
 		box.getChildren().addAll(projectList, newProjectNameField, innerBox);
 		return box;
