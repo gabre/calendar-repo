@@ -120,6 +120,15 @@ public class WeekCalendarView extends GridPane {
 			long diff = (cal.getTimeInMillis() - firstDay.getTimeInMillis()) / (1000 * 86400);
 			if (diff >= 0 && diff < 7 * weeks) {
 				Label lab = new Label(entry.getName());
+				lab.setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if (event.getButton() == MouseButton.PRIMARY) {
+							app.calendarEntryOpened(entry);
+							event.consume();
+						}
+					}	
+				});
 				lab.getStyleClass().add("calendar-event");
 				lab.setContextMenu(new CalendarEntryContextMenu(app, entry));
 				dayBoxes[(int) diff].getChildren().add(lab);

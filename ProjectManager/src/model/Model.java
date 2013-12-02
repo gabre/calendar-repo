@@ -19,7 +19,12 @@ public class Model {
 	private static final Comparator<CalendarEntry> entryComparator = new Comparator<CalendarEntry>() {
 		@Override
 		public int compare(CalendarEntry e1, CalendarEntry e2) {
-			return e1.getDate().compareTo(e2.getDate());
+			int c = e1.getDate().compareTo(e2.getDate());
+			if (c == 0) {
+				return e1.getName().compareTo(e2.getName());
+			} else {
+				return c;
+			}
 		}
 	};
 	
