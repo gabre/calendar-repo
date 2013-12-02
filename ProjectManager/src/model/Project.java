@@ -14,14 +14,6 @@ public class Project {
 		steps = FXCollections.observableArrayList();
 	}
 
-	public Project clone() {
-		try {
-			return (Project) super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
-
 	public void addStep(ProjectStep newStep) {
 		steps.add(newStep);
 	}

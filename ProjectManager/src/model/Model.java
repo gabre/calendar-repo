@@ -229,10 +229,10 @@ public class Model {
 	}
 
 	public void modifyProjectName(Project sel, String name) {
-		// TODO Auto-generated method stub
-		Project p = sel.clone();
-		p.setName(name);
-		projects.set(projects.indexOf(sel), p);
+		sel.setName(name);
+		int i = projects.indexOf(sel);
+		projects.remove(i);
+		projects.add(i, sel);
 	}
 	
 }
