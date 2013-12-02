@@ -20,6 +20,7 @@ import view.EntryWindow;
 import view.GraphEditorWindow;
 import view.MainWindow;
 import view.ModalWindow;
+import view.ProjectImportWindow;
 import view.ProjectSchedulerWindow;
 import view.ResourceManagementWindow;
 import view.StepEditorWindow;
@@ -36,6 +37,9 @@ public class ProjectManagerApplication extends Application {
 	private EntryWindow entryWin;
 	private Stage entryWinStage;
 	
+	private ProjectImportWindow importProjectWin;
+	private Stage importProjectStage;
+	
 	private GraphEditorWindow graphEditorWin;
 	private Stage graphEditorWinStage;
 	
@@ -49,7 +53,6 @@ public class ProjectManagerApplication extends Application {
 	private Stage resourceManagementWinStage;
 	
 	private Stage dialogStage;
-	
 	
 	// ENTRY POINT
     public static void main(String[] args) {
@@ -67,6 +70,7 @@ public class ProjectManagerApplication extends Application {
 
         mainWin = new MainWindow(this);
         entryWin = new EntryWindow(this);
+        importProjectWin = new ProjectImportWindow(this);
         projSchedWin = new ProjectSchedulerWindow(this);
         graphEditorWin = new GraphEditorWindow(this);
         stepEditorWin = new StepEditorWindow(this);
@@ -74,6 +78,7 @@ public class ProjectManagerApplication extends Application {
         
         createWin(stage, mainWin);
         entryWinStage = createWin(entryWin);
+        importProjectStage = createWin(importProjectWin);
         projSchedWinStage = createWin(projSchedWin);
         graphEditorWinStage = createWin(graphEditorWin);
         stepEditorWinStage = createWin(stepEditorWin);
@@ -109,6 +114,15 @@ public class ProjectManagerApplication extends Application {
 	public void calendarEntryOpened(CalendarEntry entry) {
 		entryWin.setCurrentEntry(entry);
 		entryWinStage.show();
+	}
+	
+	public void importProjectWindowOpened(Project p) {
+		importProjectWin.setProject(p);
+		importProjectStage.show();
+	}
+	
+	public void importProjectWindowClosed() {
+		importProjectStage.close();
 	}
 
 	public void graphEditorWinOpened() {
@@ -169,6 +183,6 @@ public class ProjectManagerApplication extends Application {
         stage.setScene(scene);
         stage.setTitle(win.getTitle());
         return stage;
-    }
+    }	
 
 }

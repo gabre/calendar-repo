@@ -52,7 +52,7 @@ public class Model {
 	}
 
 	public ObservableList<CalendarEntry> getCalendarEntries() {
-		return FXCollections.unmodifiableObservableList(entries);
+		return entries;
 	}
 	
 	public void sortProjectPlan()

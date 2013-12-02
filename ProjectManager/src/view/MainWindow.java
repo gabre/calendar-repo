@@ -180,6 +180,7 @@ public class MainWindow extends Window {
 		Button btnCreate = new Button("Új projekt");
 		Button btnDelete = new Button("Törlés");
 		Button btnRename = new Button("Átnevezés");
+		Button btnImport = new Button("Naptárba importálás");
 		
 		btnCreate.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -214,10 +215,20 @@ public class MainWindow extends Window {
 			}
 		});
 		
+		btnImport.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (!projectList.getSelectionModel().isEmpty()) {
+					Project p = projectList.getSelectionModel().getSelectedItem();
+					app.importProjectWindowOpened(p);
+				}
+			}
+		});
+		
 		HBox innerBox = new HBox(5);
 		innerBox.getChildren().addAll(btnCreate, btnDelete, btnRename);
 		
-		box.getChildren().addAll(projectList, newProjectNameField, innerBox);
+		box.getChildren().addAll(projectList, newProjectNameField, innerBox, btnImport);
 		return box;
 	}
 
