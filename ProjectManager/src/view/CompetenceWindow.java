@@ -1,10 +1,9 @@
 package view;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,14 +36,16 @@ public class CompetenceWindow extends Window {
 	@Override
 	public Parent getView() {
 		mainPane = new BorderPane();
-		
 		VBox topArea = new VBox(10);
-		//topArea.getStyleClass().add("header");
 		
 		HBox competenceLine = new HBox(10);
-		HBox confirmLine = new HBox(10);
+		competenceLine.setPadding(new Insets(10, 0, 0, 10));
 		
-		Label competenceLabel = new Label("Competence");
+		HBox confirmLine = new HBox(10);
+		confirmLine.setPadding(new Insets(0, 10, 0, 10));
+		confirmLine.setAlignment(Pos.BASELINE_RIGHT);
+		
+		Label competenceLabel = new Label("Kompetencia:");
 		competenceLine.getChildren().add(competenceLabel);
 		competenceLine.getChildren().add(competenceName);
 		
@@ -55,7 +56,7 @@ public class CompetenceWindow extends Window {
             	((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
             }
         });
-		Button cancelButton = new Button("Cancel");
+		Button cancelButton = new Button("Mégse");
         cancelButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	((Stage)(((Button)e.getSource()).getScene().getWindow())).close();

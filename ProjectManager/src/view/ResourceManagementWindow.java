@@ -10,7 +10,6 @@ import app.ProjectManagerApplication;
 import model.ResourceElement;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,7 +23,6 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,7 +32,6 @@ import javafx.util.Callback;
 public class ResourceManagementWindow extends Window implements Observer {
 
 	private BorderPane mainPane;
-	private BorderPane contentArea;
 	private TableView<ResourceElement> resourceView;
 	private TableView<String> competenceView;
 	private TextField resourceFilter;
@@ -57,7 +54,7 @@ public class ResourceManagementWindow extends Window implements Observer {
 
 	@Override
 	public String getTitle() {
-		return new String("Project Manager / Resource Management");
+		return new String("Erõforráskezelõ");
 	}
 
 	// Should be factored down to smaller methods
@@ -68,13 +65,12 @@ public class ResourceManagementWindow extends Window implements Observer {
 		mainPane = new BorderPane();
 
 		HBox topArea = new HBox(50);
-        //topArea.getStyleClass().add("header");
         
         VBox resourceControlls = new VBox(5);
         
         resourceView = new TableView<ResourceElement>();
-        TableColumn<ResourceElement, String> resCol1 = new TableColumn<ResourceElement, String>("Name");
-        TableColumn<ResourceElement, String> resCol2 = new TableColumn<ResourceElement, String>("Competence");
+        TableColumn<ResourceElement, String> resCol1 = new TableColumn<ResourceElement, String>("Név");
+        TableColumn<ResourceElement, String> resCol2 = new TableColumn<ResourceElement, String>("Kompetencia");
         resCol1.setCellValueFactory(new PropertyValueFactory<ResourceElement,String>("name"));
         resCol2.setCellValueFactory(new PropertyValueFactory<ResourceElement,String>("competence"));
         resourceView.getColumns().addAll(resCol1, resCol2);
@@ -89,13 +85,13 @@ public class ResourceManagementWindow extends Window implements Observer {
 
         HBox resourceButtons = new HBox(5);
         
-        addResourceButton = new Button("Add");
+        addResourceButton = new Button("Felvétel");
         addResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	ResourceWindow window = null;
             	try {
-            		window = new ResourceWindow("Project Manager / Add resource", app.getDataManager().getCompetences(), null);
-            		showWindow(window, 300, 200);
+            		window = new ResourceWindow("Új erõforrás felvétele", app.getDataManager().getCompetences(), null);
+            		showWindow(window, 300, 130);
             		if(window.isConfirmed()) {
                     	app.getDataManager().addResource(window.getName(), window.getCompetence());
                     	resourceView.setItems(app.getDataManager().getResources());
@@ -107,7 +103,7 @@ public class ResourceManagementWindow extends Window implements Observer {
         });
         resourceButtons.getChildren().add(addResourceButton);
         
-        deleteResourceButton = new Button("Delete");
+        deleteResourceButton = new Button("Törlés");
         deleteResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	if(!resourceView.getSelectionModel().isEmpty())
@@ -121,13 +117,13 @@ public class ResourceManagementWindow extends Window implements Observer {
         });
         resourceButtons.getChildren().add(deleteResourceButton);
         
-        editResourceButton = new Button("Edit");
+        editResourceButton = new Button("Szerkesztés");
         editResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	if(!resourceView.getSelectionModel().isEmpty())
             		try {
-            			ResourceWindow window = new ResourceWindow("Project Manager / Edit resource", app.getDataManager().getCompetences(), resourceView.getSelectionModel().getSelectedItem());
-            			showWindow(window, 300, 200);
+            			ResourceWindow window = new ResourceWindow("Erõforrás szerkesztése", app.getDataManager().getCompetences(), resourceView.getSelectionModel().getSelectedItem());
+            			showWindow(window, 300, 130);
             			if(window.isConfirmed()) {
             				app.getDataManager().editResource(resourceView.getSelectionModel().getSelectedItem(), window.getName(), window.getCompetence());
             				resourceView.setItems(app.getDataManager().getResources());
@@ -142,13 +138,13 @@ public class ResourceManagementWindow extends Window implements Observer {
         
         HBox resourceFilterElements = new HBox(10);
         
-        Label resourceFilterLabel = new Label("Filter:");
+        Label resourceFilterLabel = new Label("Szûrés:");
         resourceFilterElements.getChildren().add(resourceFilterLabel);
         
         resourceFilter = new TextField();
         resourceFilterElements.getChildren().add(resourceFilter);
         
-        filterResourceButton = new Button("Filter");
+        filterResourceButton = new Button("Szûrés");
         filterResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	try {
@@ -173,7 +169,7 @@ public class ResourceManagementWindow extends Window implements Observer {
         
         competenceView = new TableView<String>();
         competenceView.getColumns().clear();
-        TableColumn<String, String> compCol = new TableColumn<String, String>("Competence");
+        TableColumn<String, String> compCol = new TableColumn<String, String>("Kompetencia");
         compCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<String,String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(CellDataFeatures<String, String> param) {
@@ -192,11 +188,11 @@ public class ResourceManagementWindow extends Window implements Observer {
 
         HBox competenceButtons = new HBox(5);
         
-        Button addCompetenceButton = new Button("Add");
+        Button addCompetenceButton = new Button("Felvétel");
         addCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-            	CompetenceWindow window = new CompetenceWindow("Project Manager / Add competence", "");
-            	showWindow(window, 300, 120);
+            	CompetenceWindow window = new CompetenceWindow("Új kompetencia felvétele", "");
+            	showWindow(window, 300, 100);
                 if(window.isConfirmed())
 					try {
 						app.getDataManager().addCompetence(window.getCompetence());
@@ -208,7 +204,7 @@ public class ResourceManagementWindow extends Window implements Observer {
         });
         competenceButtons.getChildren().add(addCompetenceButton);
         
-        Button deleteCompetenceButton = new Button("Delete");
+        Button deleteCompetenceButton = new Button("Törlés");
         deleteCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	if(!competenceView.getSelectionModel().isEmpty())
@@ -222,12 +218,12 @@ public class ResourceManagementWindow extends Window implements Observer {
         });
         competenceButtons.getChildren().add(deleteCompetenceButton);
         
-        Button editCompetenceButton = new Button("Edit");
+        Button editCompetenceButton = new Button("Szerkesztés");
         editCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	if(!competenceView.getSelectionModel().isEmpty()) {
-            		CompetenceWindow window = new CompetenceWindow("Project Manager / Edit competence", competenceView.getSelectionModel().getSelectedItem());
-            		showWindow(window, 300, 120);
+            		CompetenceWindow window = new CompetenceWindow("Kompetencia szerkesztése", competenceView.getSelectionModel().getSelectedItem());
+            		showWindow(window, 300, 100);
             		if(window.isConfirmed()) {
             			try {
             				app.getDataManager().editCompetence(competenceView.getSelectionModel().getSelectedItem(), window.getCompetence());
@@ -245,13 +241,13 @@ public class ResourceManagementWindow extends Window implements Observer {
         
         HBox competenceFilterElements = new HBox(10);
         
-        Label competenceFilterLabel = new Label("Filter:");
+        Label competenceFilterLabel = new Label("Szûrés:");
         competenceFilterElements.getChildren().add(competenceFilterLabel);
         
         competenceFilter = new TextField();
         competenceFilterElements.getChildren().add(competenceFilter);
         
-        Button filterCompetenceButton = new Button("Filter");
+        Button filterCompetenceButton = new Button("Szûrés");
         filterCompetenceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
 				try {
@@ -273,12 +269,6 @@ public class ResourceManagementWindow extends Window implements Observer {
         topArea.getChildren().add(competenceControlls);
         
         mainPane.setTop(topArea);
-
-        //we use this contentPane because this way we can add style (i.e. padding)
-        contentArea = new BorderPane();
-        // contentArea.centerProperty().bind(model.contentProperty());
-        contentArea.getStyleClass().add("body");
-        mainPane.setCenter(contentArea);
         return mainPane;
 	}
 	

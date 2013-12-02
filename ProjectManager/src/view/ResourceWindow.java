@@ -7,6 +7,8 @@ import model.ResourceElement;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -53,17 +55,22 @@ public class ResourceWindow extends Window implements Observer {
 		mainPane = new BorderPane();
 		
 		VBox topArea = new VBox(10);
-		//topArea.getStyleClass().add("header");
 		
 		HBox resourceLine = new HBox(10);
-		HBox competenceLine = new HBox(10);
-		HBox confirmLine = new HBox(10);
+		resourceLine.setPadding(new Insets(10, 0, 0, 10));
 		
-		Label resourceNameLabel = new Label("Name");
+		HBox competenceLine = new HBox(10);
+		competenceLine.setPadding(new Insets(10, 0, 0, 10));
+		
+		HBox confirmLine = new HBox(10);
+		confirmLine.setPadding(new Insets(0, 10, 0, 10));
+		confirmLine.setAlignment(Pos.BASELINE_RIGHT);
+		
+		Label resourceNameLabel = new Label("Név:");
 		resourceLine.getChildren().add(resourceNameLabel);
 		resourceLine.getChildren().add(resourceName);
 		
-		Label competenceLabel = new Label("Competence");
+		Label competenceLabel = new Label("Kompetencia:");
 		competenceLine.getChildren().add(competenceLabel);
 		competenceLine.getChildren().add(competence);
 		
@@ -76,7 +83,7 @@ public class ResourceWindow extends Window implements Observer {
             	}
             }
         });
-		Button cancelButton = new Button("Cancel");
+		Button cancelButton = new Button("Mégse");
         cancelButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
