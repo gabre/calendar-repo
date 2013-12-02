@@ -68,8 +68,8 @@ public class Model {
 	public HashMap<String, Number> calculateMetrics(Project p)
 	{
 		HashMap<String, Number> metrics = new HashMap<>();
-		metrics.put("Average duration", calculateAvgDuration(p));
-		metrics.put("Sum of duration", calculateSumDuration(p));
+		metrics.put("Átlagos idõtartam", calculateAvgDuration(p));
+		metrics.put("Teljes idõtartam", calculateSumDuration(p));
 		return metrics;
 	}
 	

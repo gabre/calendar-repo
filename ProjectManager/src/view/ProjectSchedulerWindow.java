@@ -56,11 +56,11 @@ public class ProjectSchedulerWindow extends Window {
 		/* TVIEW TABLE SETUP */
 		tView = new TableView<ProjectStep>();
 		TableColumn<ProjectStep, String> col1 = new TableColumn<ProjectStep, String>(
-				"Name");
+				"Név");
 		TableColumn<ProjectStep, Integer> col2 = new TableColumn<ProjectStep, Integer>(
-				"Duration");
+				"Idõtartam");
 		TableColumn<ProjectStep, String> col3 = new TableColumn<ProjectStep, String>(
-				"Description");
+				"Leírás");
 		col1.setCellValueFactory(new PropertyValueFactory<ProjectStep, String>(
 				"name"));
 		col2.setCellValueFactory(new PropertyValueFactory<ProjectStep, Integer>(
@@ -73,11 +73,12 @@ public class ProjectSchedulerWindow extends Window {
 		tView.getColumns().get(1).setPrefWidth(100);
 		tView.getColumns().get(2).setPrefWidth(250);
 		tView.setPrefWidth(470);
+		rightSideVBox.setPrefWidth(300);
 		/* ***** */
 
-		Button addButton = new Button("Add");
-		Button editButton = new Button("Edit");
-		Button deleteButton = new Button("Remove");
+		Button addButton = new Button("Hozzáadás");
+		Button editButton = new Button("Szerkesztés");
+		Button deleteButton = new Button("Törlés");
 		HBox buttonsHBox = new HBox();
 		HBox upDownHBox = new HBox();
 		props = new VBox();
@@ -85,8 +86,8 @@ public class ProjectSchedulerWindow extends Window {
 		
 		Label metricsText = new Label("Metrics");
 
-		Button upButton = new Button("Up");
-		Button downButton = new Button("Down");
+		Button upButton = new Button("Fel");
+		Button downButton = new Button("Le");
 
 		props.setPadding(new Insets(5));
 		metrics.setPadding(new Insets(5));
@@ -165,9 +166,9 @@ public class ProjectSchedulerWindow extends Window {
 	
 	protected void setupProps(ProjectStep projectStep) {
     	props.getChildren().clear();
-    	props.getChildren().addAll(new Label("Competence needed: " + projectStep.getNeededCompetence()),	
-    							   new Label("Cost: " + Integer.toString(projectStep.getCost())),
-    							   new Label("Hardness: " + Integer.toString(projectStep.getDifficulty())));
+    	props.getChildren().addAll(new Label("Szükséges kompetencia: " + projectStep.getNeededCompetence()),	
+    							   new Label("Költség: " + Integer.toString(projectStep.getCost())),
+    							   new Label("Nehézség: " + Integer.toString(projectStep.getDifficulty())));
 	}
 
 	private void addMetrics(VBox metrics) {
@@ -190,7 +191,7 @@ public class ProjectSchedulerWindow extends Window {
 	protected void handleDeleteStep() {
 		ProjectStep item = getSelectedProjectStep();
 		if (item == null) {
-			app.showMessage("You have to select a project step to delete.");
+			app.showMessage("Ki kell választani egy lépést a törléshez.");
 		} else {
 			currentProject.deleteStep(item);
 		}
@@ -203,7 +204,7 @@ public class ProjectSchedulerWindow extends Window {
 	private void handleEditStep() {
 		ProjectStep item = getSelectedProjectStep();
 		if (item == null) {
-			app.showMessage("You have to select a project step to edit.");
+			app.showMessage("Ki kell választani egy lépést a szerkesztéshez.");
 		} else {
 			app.stepEditorWinEditModeOpened(
 					currentProject, item);

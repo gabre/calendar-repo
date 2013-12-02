@@ -1,6 +1,8 @@
 package view;
 
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import model.CalendarEntry;
@@ -8,10 +10,13 @@ import model.Descriptor;
 import model.Project;
 import model.ProjectStep;
 import app.ProjectManagerApplication;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -26,6 +31,9 @@ public class StepEditorWindow extends Window {
 	private TextField nameField = new TextField();
 	private TextField durationField = new TextField();
 	private TextField descriptionField = new TextField();
+	private TextField difficultyField = new TextField();
+	private TextField costField = new TextField();
+	private ChoiceBox competenceBox = new ChoiceBox();
 	
 	public StepEditorWindow(ProjectManagerApplication app) {
 		super();
@@ -45,6 +53,9 @@ public class StepEditorWindow extends Window {
 		Label l1 = new Label("Név:");
 		Label l2 = new Label("Idõtartam:");
 		Label l3 = new Label("Leírás:");
+		Label l4 = new Label("Nehézség:");
+		Label l5 = new Label("Költség:");
+		Label l6 = new Label("Szükséges tudás:");
 		
 		Button okButton = new Button("Rendben");
 		okButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -54,7 +65,9 @@ public class StepEditorWindow extends Window {
 			}
 		});
 		
-		vBox.getChildren().addAll(l1, nameField, l2, durationField, l3, descriptionField,okButton);
+		vBox.getChildren().addAll(l1, nameField, l2, durationField, l3, descriptionField, 
+								  l4, difficultyField, l5, costField, l6, competenceBox,
+								  okButton);
 		pane.setCenter(vBox);
 		return pane;
 	}
@@ -63,13 +76,16 @@ public class StepEditorWindow extends Window {
 		String name = nameField.getText();
 		String description = descriptionField.getText();
 		int duration = Integer.parseInt(durationField.getText());
+		int dif = Integer.parseInt(difficultyField.getText());
+		int cost = Integer.parseInt(costField.getText());
+		ProjectStep newStep = new ProjectStep(new Descriptor(name, duration, description, dif, 
+				(String)competenceBox.getSelectionModel().getSelectedItem(), cost));
 		if(justUpdate)
 		{
-			ProjectStep newStep = new ProjectStep(new Descriptor(name, duration, description, 0));
 			currentProject.editStep(currentStep, newStep);
 		} else
 		{
-			currentProject.addStep(new ProjectStep(new Descriptor(name, duration, description, 0)));
+			currentProject.addStep(newStep);
 		}
 		app.stepEditorWinClosed();
 	}
@@ -78,9 +94,18 @@ public class StepEditorWindow extends Window {
 		this.justUpdate = justUpdate;
 		this.currentProject = project;
 		this.currentStep = step;		
+		
 		nameField.setText(step.getName());
 		durationField.setText(Integer.toString(step.getDuration()));
 		descriptionField.setText(step.getDescription());
+		difficultyField.setText(Integer.toString(step.getDifficulty()));
+		costField.setText(Integer.toString(step.getCost()));
+		try {
+			competenceBox.setItems(app.getDataManager().getCompetences());
+		} catch (SQLException e) {
+			
+		}
+		competenceBox.getSelectionModel().select(step.getNeededCompetence());
 	}
 
 }
