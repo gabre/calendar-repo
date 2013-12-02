@@ -54,7 +54,6 @@ public class MainWindow extends Window {
 		Pane projectPane = createProjectPane();
 		projectPane.setStyle("-fx-border-width: 1; -fx-border-color: lightgray;");
 		projectPane.setPadding(new Insets(5));
-		projectPane.setPrefWidth(150);
 		centerPane = new StackPane();
 		centerPane.getChildren().add(new WeekCalendarView(app, 1));
 		centerPane.setPrefSize(640, 360);
@@ -188,6 +187,7 @@ public class MainWindow extends Window {
 				String name = newProjectNameField.getText();
 				if (!name.isEmpty()) {
 					app.getModel().addProject(new Project(name));
+					newProjectNameField.setText("");
 				}
 			}
 		});
@@ -209,6 +209,7 @@ public class MainWindow extends Window {
 				if (!projectList.getSelectionModel().isEmpty() && !name.isEmpty()) {
 					Project sel = projectList.getSelectionModel().getSelectedItem();
 					app.getModel().modifyProjectName(sel, name);
+					newProjectNameField.setText("");
 				}
 			}
 		});
