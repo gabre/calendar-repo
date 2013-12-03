@@ -7,11 +7,7 @@ import javafx.geometry.Point2D;
 
 public class GraphNodeData implements Cloneable{
 	public Point2D pos;
-	public String name = new String();
-	public String duration = new String();
-	public String description = new String();
-	public String difficulty = new String();
-	public String cost = new String();
+	public Descriptor desc = new Descriptor();
 	
 	public GraphNodeData(Point2D pos) {
 		this.pos = pos;
@@ -20,11 +16,7 @@ public class GraphNodeData implements Cloneable{
 	@Override
 	public Object clone() {
 		GraphNodeData copy = new GraphNodeData(pos);
-		copy.name = name;
-		copy.duration = duration;
-		copy.description = description;
-		copy.difficulty = difficulty;
-		copy.cost = cost;
+		copy.desc = desc;
 		return copy;
 	}
 }

@@ -57,8 +57,12 @@ public class GraphDataModel {
     	}
     }
   
-    public void addNode(Point2D pos) {
-    	graph_nodes.put(graph.addNode(), new GraphNodeData(pos));
+    public GraphNodeData addNode(Point2D pos) {
+    	GraphNodeData data = new GraphNodeData(pos);
+    	Integer id = graph.addNode();
+    	data.desc.setName("unnamed step (id " + id.toString() + ")");
+    	graph_nodes.put(id, data);
+    	return data;
     }
     
     public void deleteNode(Point2D pos) {
@@ -94,15 +98,11 @@ public class GraphDataModel {
 		}
     }
     
-    public void setNodeData(String name, String duration,
-    		String description, String difficulty, String cost) {
+    public void setNodeData(String name, int duration,
+    		String description, int difficulty, int cost) {
     	if(selected_node != null) {
     		GraphNodeData node = graph_nodes.get(selected_node);
-    		node.name = name;
-    		node.duration = duration;
-    		node.description = description;
-    		node.difficulty = difficulty;
-    		node.cost = cost;
+    		node.desc = new Descriptor(name, duration, description, difficulty, "", cost);
     	}
     }
     
@@ -116,7 +116,7 @@ public class GraphDataModel {
     		
     		// draw label
     		gc.setFont(label_font);
-    		String node_label = n.getValue().name;
+    		String node_label = n.getValue().desc.getName();
     		if( node_label.length() == 0) node_label = n.getKey().toString();
     		gc.fillText(node_label,
     					node_pos.getX() + node_radius * 1.5,

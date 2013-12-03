@@ -48,21 +48,21 @@ public class StepEditorWindow extends Window {
 			@Override
 			public void changed(ObservableValue<? extends String> event,
 					String from, String to) {
-				validateDifficulty(to);
+				ViewUtils.validateDifficulty(okButton, to);
 			}
 		});
 		costField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> event,
 					String from, String to) {
-				validateNat(to);
+				ViewUtils.validateNat(okButton, to);
 			}
 		});
 		durationField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> event,
 					String from, String to) {
-				validateNat(to);
+				ViewUtils.validateNat(okButton, to);
 			}
 		});
 		okButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -137,23 +137,5 @@ public class StepEditorWindow extends Window {
 			
 		}
 		competenceBox.getSelectionModel().select(step.getNeededCompetence());
-	}
-	
-	private void validateDifficulty(String str) {
-		try {
-			int i = Integer.parseInt(str);
-			okButton.setDisable(!(0 <= i && i <= 10));
-		} catch (NumberFormatException ex) {
-			okButton.setDisable(true);
-		}
-	}
-	
-	private void validateNat(String str) {
-		try {
-			int i = Integer.parseInt(str);
-			okButton.setDisable(!(0 <= i));
-		} catch (NumberFormatException ex) {
-			okButton.setDisable(true);
-		}
 	}
 }

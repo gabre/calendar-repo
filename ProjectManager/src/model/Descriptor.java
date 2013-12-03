@@ -1,11 +1,11 @@
 package model;
 
 public class Descriptor {
-	private String name;
-	private int duration;
-	private String description;
+	private String name = "";
+	private int duration = 0;
+	private String description = "";
 	private int difficulty = 0;
-	String neededCompetence = "kkkkkkkk";
+	String neededCompetence = "none";
 	int cost = 0;
 	
 	public Descriptor(String name, int duration, String desc, int difficulty) {
@@ -23,6 +23,9 @@ public class Descriptor {
 		this.difficulty = difficulty;
 		this.neededCompetence = neededCompetence;
 		this.cost = cost;
+	}
+
+	public Descriptor() {
 	}
 
 	public String getNeededCompetence() {

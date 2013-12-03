@@ -1,5 +1,7 @@
 package model;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,7 +10,9 @@ import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Stack;
 import java.util.concurrent.Callable;
@@ -66,7 +70,22 @@ public class Model {
 		return entries;
 	}
 
-	public void sortProjectPlan(AdjacencyMatrix mx) {
+	public Project sortProjectPlan(GraphDataModel graph) throws CycleDetectedException {
+		LinkedList<Integer> sortedList = TopologicalSorter.topologicalSort(graph.getGraphStructure().toAdjacencyMatrix());
+		Project p = new Project("unnamed");
+		HashMap<Integer, GraphNodeData> nodes = graph.getNodes();
+		Integer[] expectedL = new Integer[] {1,3,2,4};
+		assertArrayEquals(sortedList.toArray(), expectedL);
+		for(Integer nodeId : sortedList) {
+			GraphNodeData node = nodes.get(nodeId);
+			System.out.println(nodeId);
+			if(node == null) System.out.println("node null");
+			if(node != null && node.desc == null) System.out.println("node desc null");
+			ProjectStep newStep = new ProjectStep(node.desc);
+			p.addStep(newStep);
+		}
+		projects.add(p);
+		return p;
 	}
 
 	public HashMap<String, Number> calculateMetrics(Project p) {

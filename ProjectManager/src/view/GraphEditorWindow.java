@@ -1,18 +1,21 @@
 package view;
 
+import java.sql.SQLException;
+
 import app.ProjectManagerApplication;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import model.CycleDetectedException;
 import model.GraphDataModel;
 import model.GraphNodeData;
-import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -31,11 +34,12 @@ public class GraphEditorWindow extends Window {
     private Point2D dragAnchor;
     private HBox hBox;
 
-	private TextField nameField = new TextField();
-	private TextField durationField = new TextField();
-	private TextField descriptionField = new TextField();
-	private TextField difficultyField = new TextField();
-	private TextField costField = new TextField();
+	private TextField nameField = new TextField("");
+	private TextField durationField = new TextField("0");
+	private TextField descriptionField = new TextField("");
+	private TextField difficultyField = new TextField("0");
+	private TextField costField = new TextField("0");
+	private ChoiceBox<String> competenceBox = new ChoiceBox<String>();
 	private Button saveButton =  new Button("Mentés");
 
 	public GraphEditorWindow(ProjectManagerApplication app) {
@@ -45,13 +49,17 @@ public class GraphEditorWindow extends Window {
     
     private void InitControlButton(Button b, final editorState st)
     {
-    	b.setMinWidth(120);
-    	b.setMinHeight(40);
+    	setButtonSize(b);
     	b.setOnMouseClicked(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent me) {
             	currentState = st;
             }
         });
+    }
+    
+    private void setButtonSize(Button b) {
+    	b.setMinWidth(120);
+    	b.setMinHeight(40);
     }
 
 	@Override
@@ -68,6 +76,7 @@ public class GraphEditorWindow extends Window {
     	graph_model = new GraphDataModel();
     	graph_view = new Canvas(graph_viewW, graph_viewH);
         hBox = new HBox();
+        hBox.setPadding(new Insets(5));
         VBox controlButtonBox = new VBox();
 
         Button selectNodeButton	= new Button("Pont kijelölése");
@@ -75,13 +84,14 @@ public class GraphEditorWindow extends Window {
         Button deleteNodeButton = new Button("Pont törlése");
         Button addEdgeButton 	= new Button("Él hozzáadása");
         Button deleteEdgeButton = new Button("Él törlése");
+        Button topSortButton    = new Button("Rendezés");
 
         InitControlButton(selectNodeButton, editorState.SELECT_NODE);
         InitControlButton(addNodeButton, 	editorState.ADD_NODE);
         InitControlButton(deleteNodeButton, editorState.DELETE_NODE);
         InitControlButton(addEdgeButton, 	editorState.ADD_EDGE);
         InitControlButton(deleteEdgeButton, editorState.DELETE_EDGE);
-        
+        setButtonSize(topSortButton);
 
 		VBox nodePropBox = new VBox();
 		
@@ -90,13 +100,52 @@ public class GraphEditorWindow extends Window {
 		Label l3 = new Label("Leírás:");
 		Label l4 = new Label("Nehézség:");
 		Label l5 = new Label("Költség:");
+		Label l6 = new Label("Kompetencia:");
+		
+		difficultyField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				ViewUtils.validateDifficulty(saveButton, to);
+			}
+		});
+		costField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				ViewUtils.validateNat(saveButton, to);
+			}
+		});
+		durationField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				ViewUtils.validateNat(saveButton, to);
+			}
+		});
+		
+		try {
+			competenceBox.setItems(app.getDataManager().getCompetences());
+		} catch (SQLException e) {
+			
+		}
 		
 		saveButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
-		        graph_model.setNodeData(nameField.getText(), durationField.getText(),
-		        		descriptionField.getText(), difficultyField.getText(),
-		        		costField.getText());
+		        graph_model.setNodeData(nameField.getText(), Integer.parseInt(durationField.getText()),
+		        		descriptionField.getText(), Integer.parseInt(difficultyField.getText()),
+		        		Integer.parseInt(costField.getText()));
 		        graph_model.renderGraph(graph_view.getGraphicsContext2D());
+		    }
+		});
+		
+		topSortButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		        try {
+					app.projSchedWinOpened(app.getModel().sortProjectPlan(graph_model));
+				} catch (CycleDetectedException e1) {
+					app.showMessage("A gráfban kör van, így nem rendezhetõ!");
+				}
 		    }
 		});
 		
@@ -105,9 +154,10 @@ public class GraphEditorWindow extends Window {
 		nodePropBox.getChildren().addAll(
 				l1, nameField,
 				l2, durationField,
-				l3, descriptionField, 
+				l3, descriptionField,
 				l4, difficultyField,
-				l5, costField,
+				l5, costField, ViewUtils.getVPlaceHolder(5),
+				l6, competenceBox, ViewUtils.getVPlaceHolder(10),
 				saveButton);
 
 		controlButtonBox.setSpacing(10);
@@ -116,7 +166,8 @@ public class GraphEditorWindow extends Window {
         		addNodeButton,
         		deleteNodeButton,
         		addEdgeButton,
-        		deleteEdgeButton);
+        		deleteEdgeButton, ViewUtils.getVPlaceHolder(40),
+        		topSortButton);
 
         hBox.setSpacing(10);
         hBox.getChildren().addAll(controlButtonBox, graph_view, nodePropBox);
@@ -161,15 +212,13 @@ public class GraphEditorWindow extends Window {
             		graph_model.selectNode(click);
             		GraphNodeData node_data = graph_model.getSelectedNodeData();
             		if(node_data != null) {
-	            		nameField.setText(node_data.name);
-	    				durationField.setText(node_data.duration);
-	    				descriptionField.setText(node_data.description);
-	    				difficultyField.setText(node_data.difficulty);
-    					costField.setText(node_data.cost);
+	            		setFields(node_data);
             		}
             	}
             	else if(currentState == editorState.ADD_NODE) {
-            		graph_model.addNode(click);
+            		GraphNodeData node_data = graph_model.addNode(click);
+            		graph_model.selectNode(click);
+            		setFields(node_data);
             	}
             	else if(currentState == editorState.DELETE_NODE) {
             		graph_model.deleteNode(click);
@@ -180,6 +229,15 @@ public class GraphEditorWindow extends Window {
             	graph_model.renderGraph(graph_view.getGraphicsContext2D());
             }
         });
+        
 		return pane;
+	}
+
+	protected void setFields(GraphNodeData node_data) {
+		nameField.setText(node_data.desc.getName());
+		durationField.setText(Integer.toString(node_data.desc.getDuration()));
+		descriptionField.setText(node_data.desc.getDescription());
+		difficultyField.setText(Integer.toString(node_data.desc.getDifficulty()));
+		costField.setText(Integer.toString(node_data.desc.getCost()));
 	}
 }
