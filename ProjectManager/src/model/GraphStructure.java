@@ -79,7 +79,8 @@ public class GraphStructure implements Cloneable {
 		AdjacencyMatrix mx = new AdjacencyMatrix(size);
 		for(Integer i = 0; i < size; ++i) {
 			for(Integer j = 0; j < size; ++j) {
-				mx.adjMx[i][j]=edgeMap.containsKey(i) && edgeMap.get(i).contains(j);
+				mx.adjMx[i][j] = edgeMap.containsKey(i+STARTS_FROM) &&
+						edgeMap.get(i+STARTS_FROM).contains(j+STARTS_FROM);
 			}
 		}
 		return mx;
@@ -90,10 +91,10 @@ public class GraphStructure implements Cloneable {
 		for(Integer i = 0; i < mx.adjMx.length; ++i) {
 			for(Integer j = 0; j < mx.adjMx.length; ++j) {
 				if(mx.adjMx[i][j]) {
-					if(!edgeMap.containsKey(i))	{
-						edgeMap.put(i, new HashSet<Integer>());
+					if(!edgeMap.containsKey(i+STARTS_FROM))	{
+						edgeMap.put(i+STARTS_FROM, new HashSet<Integer>());
 					}
-					edgeMap.get(i).add(j);
+					edgeMap.get(i+STARTS_FROM).add(j+STARTS_FROM);
 				}
 			}
 		}
