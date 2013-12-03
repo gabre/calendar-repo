@@ -74,11 +74,12 @@ public class MainWindow extends Window {
 	}
 	
 	private void openProjectScheduler() {
-		if (projectList.getSelectionModel().isEmpty()) {
-			projectList.getSelectionModel().select(0);
+		if (!projectList.getItems().isEmpty()) {
+			if (projectList.getSelectionModel().isEmpty()) {
+				projectList.getSelectionModel().select(0);
+			}
+			app.projSchedWinOpened(projectList.getSelectionModel().getSelectedItem());
 		}
-		
-		app.projSchedWinOpened(projectList.getSelectionModel().getSelectedItem());	
 	}
 	
 	/*
