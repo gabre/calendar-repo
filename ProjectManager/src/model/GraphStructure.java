@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-public class GraphStructure {
+public class GraphStructure implements Cloneable {
 	private static final Integer STARTS_FROM = 1;
 	private HashMap<Integer, HashSet<Integer>> edgeMap;
 	private Integer max_node;
@@ -104,4 +104,13 @@ public class GraphStructure {
 		graph_string += "G: max_node: " + max_node + " E: " + edgeMap.toString();
 		return graph_string;
 	}
+	
+	@Override
+	public Object clone() {
+		GraphStructure copy = new GraphStructure();
+		copy.edgeMap = (HashMap<Integer, HashSet<Integer>>) edgeMap.clone();
+		copy.max_node = max_node;
+		return copy;
+	}
+	
 }

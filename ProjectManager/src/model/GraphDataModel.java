@@ -1,6 +1,7 @@
 package model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import javafx.geometry.Point2D;
@@ -24,6 +25,23 @@ public class GraphDataModel {
     	selected_node = null;
     	graph = new GraphStructure();
     	graph_nodes = new HashMap<Integer, GraphNodeData>();
+    }
+    
+    public GraphStructure getGraphStructure() {
+    	return (GraphStructure) graph.clone();
+    }
+    
+    public HashMap<Integer, GraphNodeData> getNodes() {
+    	HashMap<Integer, GraphNodeData> copy = new HashMap<Integer, GraphNodeData>();
+		for (Entry<Integer, GraphNodeData> s: graph_nodes.entrySet()) {
+			copy.put(s.getKey(), (GraphNodeData) s.getValue().clone());
+		}
+    	return copy;
+    }
+    
+    public GraphNodeData getSelectedNodeData() {
+    	if (selected_node == null) return null;
+    	else return (GraphNodeData) graph_nodes.get(selected_node).clone();
     }
   
     public void selectNode(Point2D pos) {
@@ -76,6 +94,18 @@ public class GraphDataModel {
 		}
     }
     
+    public void setNodeData(String name, String duration,
+    		String description, String difficulty, String cost) {
+    	if(selected_node != null) {
+    		GraphNodeData node = graph_nodes.get(selected_node);
+    		node.name = name;
+    		node.duration = duration;
+    		node.description = description;
+    		node.difficulty = difficulty;
+    		node.cost = cost;
+    	}
+    }
+    
     public void renderGraph(GraphicsContext gc)
     {
         gc.setFill(Color.LIGHTGRAY);
@@ -83,14 +113,22 @@ public class GraphDataModel {
         gc.setFill(Color.BLACK);
     	for( Entry<Integer, GraphNodeData> n : graph_nodes.entrySet() ) {
     		final Point2D node_pos = n.getValue().pos;
+    		
+    		// draw label
     		gc.setFont(label_font);
-    		gc.fillText(n.getKey().toString(),
+    		String node_label = n.getValue().name;
+    		if( node_label.length() == 0) node_label = n.getKey().toString();
+    		gc.fillText(node_label,
     					node_pos.getX() + node_radius * 1.5,
     					node_pos.getY());
+    		
+    		//draw node
             gc.fillOval(node_pos.getX() - node_radius,
             			node_pos.getY() - node_radius,
             			node_radius * 2,
             			node_radius * 2);
+            
+            //draw edges
             for( Integer m : graph.getNeighbors(n.getKey()) ) {
             	Point2D line_start = node_pos;
             	Point2D line_end = graph_nodes.get(m).pos;
