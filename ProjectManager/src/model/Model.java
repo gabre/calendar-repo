@@ -10,7 +10,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Stack;
+import java.util.concurrent.Callable;
 
+import model.ModelUtils.Getter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -27,28 +30,31 @@ public class Model {
 			}
 		}
 	};
-	
-	private ObservableList<CalendarEntry> entries = FXCollections.observableArrayList();
-	private ObservableList<Project> projects = FXCollections.observableArrayList();
-	
+
+	private ObservableList<CalendarEntry> entries = FXCollections
+			.observableArrayList();
+	private ObservableList<Project> projects = FXCollections
+			.observableArrayList();
+
 	private Connection connection;
-	
+
 	public Model() throws SQLException, ClassNotFoundException {
 		Class.forName("org.sqlite.JDBC");
-		connection = DriverManager.getConnection("jdbc:sqlite:CalendarDatabase.db;");
+		connection = DriverManager
+				.getConnection("jdbc:sqlite:CalendarDatabase.db;");
 		createTables();
 		loadFromDb();
 	}
-	
+
 	public void addEntry(CalendarEntry e) {
 		entries.add(e);
 		FXCollections.sort(entries, entryComparator);
 	}
-	
+
 	public void removeEntry(CalendarEntry e) {
 		entries.remove(e);
 	}
-	
+
 	public void modifyEntry(CalendarEntry from, CalendarEntry to) {
 		if (entries.remove(from)) {
 			entries.add(to);
@@ -59,25 +65,31 @@ public class Model {
 	public ObservableList<CalendarEntry> getCalendarEntries() {
 		return entries;
 	}
-	
-	public void sortProjectPlan()
-	{
-		
+
+	public void sortProjectPlan(AdjacencyMatrix mx) {
 	}
-	
-	public HashMap<String, Number> calculateMetrics(Project p)
-	{
+
+	public HashMap<String, Number> calculateMetrics(Project p) {
 		HashMap<String, Number> metrics = new HashMap<>();
 		metrics.put("Átlagos idõtartam", calculateAvgDuration(p));
 		metrics.put("Teljes idõtartam", calculateSumDuration(p));
+		metrics.put("Átlagköltség", calculateAvgCost(p));
+		metrics.put("Összköltség", calculateSumCost(p));
 		return metrics;
 	}
-	
+
 	private int calculateSumDuration(Project p) {
+		return calculateSum(p, new ModelUtils.DurationGetter());
+	}
+
+	private int calculateSumCost(Project p) {
+		return calculateSum(p, new ModelUtils.CostGetter());
+	}
+
+	private int calculateSum(Project p, Getter fun) {
 		int sum = 0;
-		for(ProjectStep item : p.getAllSteps())
-		{
-			sum += item.getDuration();
+		for (ProjectStep item : p.getAllSteps()) {
+			sum += fun.getInt(item);
 		}
 		return sum;
 	}
@@ -87,11 +99,15 @@ public class Model {
 		return size == 0 ? 0 : calculateSumDuration(p) / size;
 	}
 
-	public void addProject(Project proj)
-	{
+	private double calculateAvgCost(Project p) {
+		int size = p.getAllSteps().size();
+		return size == 0 ? 0 : calculateSumCost(p) / size;
+	}
+
+	public void addProject(Project proj) {
 		projects.add(proj);
 	}
-	
+
 	public void removeProject(Project proj) {
 		Iterator<CalendarEntry> iter = entries.iterator();
 		while (iter.hasNext()) {
@@ -100,48 +116,33 @@ public class Model {
 				iter.remove();
 			}
 		}
-		
+
 		proj.getAllSteps().clear();
 		projects.remove(proj);
 	}
-	
+
 	public ObservableList<Project> getProjects() {
 		return projects;
 	}
-	
+
 	private void createTables() {
 		try {
 			Statement s = connection.createStatement();
-			s.execute(
-					"CREATE TABLE IF NOT EXISTS Projects (" +
-						"Id INTEGER PRIMARY KEY," +
-						"Name VARCHAR(255)" +
-					")"
-					);
-			s.execute(
-					"CREATE TABLE IF NOT EXISTS ProjectSteps (" +
-						"ProjectId INTEGER," +
-						"Name VARCHAR(255)," +
-						"Duration INTEGER," +
-						"Description VARCHAR(255)," +
-						"Difficulty INTEGER," +
-						"NeededCompetence VARCHAR(255)," +
-						"Cost INTEGER" +
-					")"
-					);
-			s.execute(
-					"CREATE TABLE IF NOT EXISTS Entries (" +
-						"ProjectId INTEGER," +
-						"Name VARCHAR(255)," +
-						"Description VARCHAR(255)," +
-						"Date INTEGER" +
-					")"
-					);
+			s.execute("CREATE TABLE IF NOT EXISTS Projects ("
+					+ "Id INTEGER PRIMARY KEY," + "Name VARCHAR(255)" + ")");
+			s.execute("CREATE TABLE IF NOT EXISTS ProjectSteps ("
+					+ "ProjectId INTEGER," + "Name VARCHAR(255),"
+					+ "Duration INTEGER," + "Description VARCHAR(255),"
+					+ "Difficulty INTEGER," + "NeededCompetence VARCHAR(255),"
+					+ "Cost INTEGER" + ")");
+			s.execute("CREATE TABLE IF NOT EXISTS Entries ("
+					+ "ProjectId INTEGER," + "Name VARCHAR(255),"
+					+ "Description VARCHAR(255)," + "Date INTEGER" + ")");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private void loadFromDb() {
 		try {
 			Statement s = connection.createStatement();
@@ -152,7 +153,7 @@ public class Model {
 				projects.add(proj);
 				projs.put(res.getInt("Id"), proj);
 			}
-			
+
 			res = s.executeQuery("SELECT * FROM ProjectSteps");
 			while (res.next()) {
 				Project proj = projs.get(res.getInt("ProjectId"));
@@ -165,26 +166,26 @@ public class Model {
 				step.setCost(res.getInt("Cost"));
 				proj.addStep(step);
 			}
-			
+
 			res = s.executeQuery("SELECT ProjectId, Name, Description, Date FROM Entries");
 			while (res.next()) {
 				if (res.getObject("ProjectId") == null) {
-					entries.add(new CalendarEntry(res.getString("Name"),
-							                      res.getString("Description"),
-							                      new Date(res.getLong("Date"))));
+					entries.add(new CalendarEntry(res.getString("Name"), res
+							.getString("Description"), new Date(res
+							.getLong("Date"))));
 				} else {
-					entries.add(new CalendarEntry(res.getString("Name"),
-		                                          res.getString("Description"),
-		                                          new Date(res.getLong("Date")),
-		                                          projs.get(res.getInt("ProjectId"))));
+					entries.add(new CalendarEntry(res.getString("Name"), res
+							.getString("Description"), new Date(res
+							.getLong("Date")), projs.get(res
+							.getInt("ProjectId"))));
 				}
 			}
-			
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public void saveToDb() {
 		try {
 			Statement s = connection.createStatement();
@@ -194,38 +195,35 @@ public class Model {
 			HashMap<Project, Integer> projIds = new HashMap<>();
 			int id = 0;
 			for (Project proj : projects) {
-				s.execute(String.format("INSERT INTO Projects (Id, Name) VALUES (%d, '%s')",
-						                id, proj.getName()));
+				s.execute(String.format(
+						"INSERT INTO Projects (Id, Name) VALUES (%d, '%s')",
+						id, proj.getName()));
 				for (ProjectStep step : proj.getAllSteps()) {
-					s.execute(String.format("INSERT INTO ProjectSteps " +
-				                            "(ProjectId, Name, Duration, Description, Difficulty, NeededCompetence, Cost) VALUES (" +
-							                "%d, '%s', %d, '%s', %d, '%s', %d)",
-							                id,
-							                step.getName(),
-							                step.getDuration(),
-							                step.getDescription(),
-							                step.getDifficulty(),
-							                step.getNeededCompetence(),
-							                step.getCost()));
+					s.execute(String
+							.format("INSERT INTO ProjectSteps "
+									+ "(ProjectId, Name, Duration, Description, Difficulty, NeededCompetence, Cost) VALUES ("
+									+ "%d, '%s', %d, '%s', %d, '%s', %d)", id,
+									step.getName(), step.getDuration(),
+									step.getDescription(),
+									step.getDifficulty(),
+									step.getNeededCompetence(), step.getCost()));
 				}
 				projIds.put(proj, id);
 				id++;
 			}
-			
+
 			for (CalendarEntry entry : entries) {
 				if (entry.getProject() == null) {
-					s.execute(String.format("INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES (" +
-				                            "NULL, '%s', '%s', %d)",
-				                            entry.getName(),
-				                            entry.getDescription(),
-				                            entry.getDate().getTime()));
+					s.execute(String.format(
+							"INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES ("
+									+ "NULL, '%s', '%s', %d)", entry.getName(),
+							entry.getDescription(), entry.getDate().getTime()));
 				} else {
-					s.execute(String.format("INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES (" +
-                            "%d, '%s', '%s', %d)",
-                            projIds.get(entry.getProject()),
-                            entry.getName(),
-                            entry.getDescription(),
-                            entry.getDate().getTime()));
+					s.execute(String.format(
+							"INSERT INTO Entries (ProjectId, Name, Description, Date) VALUES ("
+									+ "%d, '%s', '%s', %d)",
+							projIds.get(entry.getProject()), entry.getName(),
+							entry.getDescription(), entry.getDate().getTime()));
 				}
 			}
 		} catch (SQLException ex) {
@@ -239,5 +237,5 @@ public class Model {
 		projects.remove(i);
 		projects.add(i, sel);
 	}
-	
+
 }

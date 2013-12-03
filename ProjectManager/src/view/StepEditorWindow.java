@@ -10,16 +10,21 @@ import model.Descriptor;
 import model.Project;
 import model.ProjectStep;
 import app.ProjectManagerApplication;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class StepEditorWindow extends Window {
@@ -33,13 +38,42 @@ public class StepEditorWindow extends Window {
 	private TextField descriptionField = new TextField();
 	private TextField difficultyField = new TextField();
 	private TextField costField = new TextField();
-	private ChoiceBox competenceBox = new ChoiceBox();
+	private ChoiceBox<String> competenceBox = new ChoiceBox();
+	private Button okButton =  new Button("Rendben");
 	
 	public StepEditorWindow(ProjectManagerApplication app) {
 		super();
 		this.app = app;
+		difficultyField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				validateDifficulty(to);
+			}
+		});
+		costField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				validateNat(to);
+			}
+		});
+		durationField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> event,
+					String from, String to) {
+				validateNat(to);
+			}
+		});
+		okButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				submitFields();
+			}
+		});
+		
 	}
-
+	
 	@Override
 	public String getTitle() {
 		return new String("Project step editor");
@@ -49,6 +83,9 @@ public class StepEditorWindow extends Window {
 	public Parent getView() {
 		BorderPane pane = new BorderPane();
 		VBox vBox = new VBox();
+		vBox.setPadding(new Insets(5));
+		
+		HBox compHBox = new HBox();
 		
 		Label l1 = new Label("Név:");
 		Label l2 = new Label("Idõtartam:");
@@ -57,17 +94,11 @@ public class StepEditorWindow extends Window {
 		Label l5 = new Label("Költség:");
 		Label l6 = new Label("Szükséges tudás:");
 		
-		Button okButton = new Button("Rendben");
-		okButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				submitFields();
-			}
-		});
+		compHBox.getChildren().addAll(l6, ViewUtils.getHPlaceHolder(20), competenceBox);
 		
 		vBox.getChildren().addAll(l1, nameField, l2, durationField, l3, descriptionField, 
-								  l4, difficultyField, l5, costField, l6, competenceBox,
-								  okButton);
+								  l4, difficultyField, l5, costField, ViewUtils.getVPlaceHolder(10),
+								  compHBox, ViewUtils.getVPlaceHolder(10), okButton);
 		pane.setCenter(vBox);
 		return pane;
 	}
@@ -107,5 +138,22 @@ public class StepEditorWindow extends Window {
 		}
 		competenceBox.getSelectionModel().select(step.getNeededCompetence());
 	}
-
+	
+	private void validateDifficulty(String str) {
+		try {
+			int i = Integer.parseInt(str);
+			okButton.setDisable(!(0 <= i && i <= 10));
+		} catch (NumberFormatException ex) {
+			okButton.setDisable(true);
+		}
+	}
+	
+	private void validateNat(String str) {
+		try {
+			int i = Integer.parseInt(str);
+			okButton.setDisable(!(0 <= i));
+		} catch (NumberFormatException ex) {
+			okButton.setDisable(true);
+		}
+	}
 }

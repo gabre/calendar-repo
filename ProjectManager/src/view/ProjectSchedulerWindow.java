@@ -83,7 +83,7 @@ public class ProjectSchedulerWindow extends Window {
 		HBox upDownHBox = new HBox();
 		props = new VBox();
 		metrics = new VBox();
-		
+
 		Label metricsText = new Label("Metrics");
 
 		Button upButton = new Button("Fel");
@@ -101,7 +101,7 @@ public class ProjectSchedulerWindow extends Window {
 		buttonsHBox.setSpacing(4);
 
 		metrics.getChildren().add(metricsText);
-		
+
 		hBox.getChildren().add(tView);
 		HBox.setHgrow(tView, Priority.ALWAYS);
 		buttonsHBox.getChildren().addAll(addButton, editButton, deleteButton);
@@ -148,37 +148,44 @@ public class ProjectSchedulerWindow extends Window {
 				exchangeSteps(1);
 			}
 		});
-		tView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<ProjectStep>()
-			    {
-	        @Override
-	        public void onChanged(Change<? extends ProjectStep> change)
-	        {
-	            if (change.getList().size() == 1)
-	            {
-	            	setupProps(change.getList().get(0));
-	            }
-	        }
+		tView.getSelectionModel().getSelectedItems()
+				.addListener(new ListChangeListener<ProjectStep>() {
+					@Override
+					public void onChanged(Change<? extends ProjectStep> change) {
+						if (change.getList().size() == 1) {
+							setupProps(change.getList().get(0));
+						}
+					}
 
-	    });
-		
+				});
+
 		return mainPane;
 	}
-	
+
 	protected void setupProps(ProjectStep projectStep) {
-    	props.getChildren().clear();
-    	props.getChildren().addAll(new Label("Szükséges kompetencia: " + projectStep.getNeededCompetence()),	
-    							   new Label("Költség: " + Integer.toString(projectStep.getCost())),
-    							   new Label("Nehézség: " + Integer.toString(projectStep.getDifficulty())));
+		props.getChildren().clear();
+		props.getChildren()
+				.addAll(new Label("Szükséges kompetencia: "
+						+ projectStep.getNeededCompetence()),
+						ViewUtils.getVPlaceHolder(5),
+						new Label("Költség: "
+								+ Integer.toString(projectStep.getCost())),
+						ViewUtils.getVPlaceHolder(5),
+						new Label("Nehézség: "
+								+ Integer.toString(projectStep.getDifficulty())));
 	}
 
 	private void addMetrics(VBox metrics) {
-		if(currentProject == null) {
+		if (currentProject == null) {
 			return;
 		}
-		Set<Entry<String, Number>> metricsSet = app.getModel().calculateMetrics(currentProject).entrySet();
+		Set<Entry<String, Number>> metricsSet = app.getModel()
+				.calculateMetrics(currentProject).entrySet();
 		metrics.getChildren().clear();
-		for( Entry<String, Number> m : metricsSet ) {
-			metrics.getChildren().add(new Label(m.getKey() + ": " + m.getValue().toString()));
+		for (Entry<String, Number> m : metricsSet) {
+			metrics.getChildren().addAll(
+					new Label(m.getKey() + ": " + m.getValue().toString()),
+					ViewUtils.getVPlaceHolder(5));
 		}
 	}
 
@@ -194,6 +201,7 @@ public class ProjectSchedulerWindow extends Window {
 			app.showMessage("Ki kell választani egy lépést a törléshez.");
 		} else {
 			currentProject.deleteStep(item);
+			resetMetrics();
 		}
 	}
 
@@ -206,8 +214,7 @@ public class ProjectSchedulerWindow extends Window {
 		if (item == null) {
 			app.showMessage("Ki kell választani egy lépést a szerkesztéshez.");
 		} else {
-			app.stepEditorWinEditModeOpened(
-					currentProject, item);
+			app.stepEditorWinEditModeOpened(currentProject, item);
 		}
 	}
 
@@ -228,5 +235,9 @@ public class ProjectSchedulerWindow extends Window {
 		}
 		int refreshIndex = currentProject.exchangeSteps(item, indexOffset);
 		tView.getSelectionModel().select(refreshIndex);
+	}
+
+	public void resetMetrics() {
+		addMetrics(metrics);
 	}
 }

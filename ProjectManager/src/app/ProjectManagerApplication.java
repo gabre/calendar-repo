@@ -150,6 +150,7 @@ public class ProjectManagerApplication extends Application {
 	
 	public void stepEditorWinClosed() {
 		stepEditorWinStage.close();
+		projSchedWin.resetMetrics();
 	}	
 	
 	public void resourceManagementOpened() {
