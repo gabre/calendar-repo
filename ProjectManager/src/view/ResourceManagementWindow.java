@@ -218,7 +218,7 @@ public class ResourceManagementWindow extends Window implements Observer {
 	private void deleteResourceClicked() {
 		if(!resourceView.getSelectionModel().isEmpty()) {
     		try {
-    			app.getDataManager().deleteResource(resourceView.getSelectionModel().getSelectedItem());
+    			app.getDataManager().deleteResource(resourceView.getSelectionModel().getSelectedItem().getName());
     			resourceView.setItems(app.getDataManager().getResources());
     		} catch (SQLException ex) {
     			app.showMessage(ex.getMessage());

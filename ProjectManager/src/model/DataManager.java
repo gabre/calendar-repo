@@ -30,7 +30,7 @@ public class DataManager {
                 stmt.execute(
                         "CREATE TABLE Resources (" +
                         	"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                            "Resource VARCHAR(255)," +
+                            "Resource VARCHAR(255) UNIQUE," +
                         	"Competence INTEGER," +
                             "FOREIGN KEY (Competence) REFERENCES Competences(Competence)" +
                         ")"
@@ -48,9 +48,9 @@ public class DataManager {
 		stm.close();
 	}
 	
-	public void deleteResource(ResourceElement value) throws SQLException {
+	public void deleteResource(String value) throws SQLException {
 		Statement stm = conn.createStatement();
-		stm.execute("DELETE FROM Resources WHERE Resource = '" + value.getName() + "' AND Competence = " + value.getCompetenceId());
+		stm.execute("DELETE FROM Resources WHERE Resource = '" + value + "'");
 		stm.close();
 	}
 	
@@ -89,7 +89,6 @@ public class DataManager {
 		while(r.next()) {
 			result.add(r.getString(1));
 		}
-		stm.close();
 		return result;
 	}
 	
@@ -101,7 +100,6 @@ public class DataManager {
         while(t.next()) {
         	result.add(new ResourceElement(t.getString(1), t.getString(3), t.getInt(2)));
         }  
-        stm.close();
 		return result;
 	}
 }
