@@ -55,26 +55,19 @@ public class ResourceWindow extends Window implements Observer {
 		mainPane = new BorderPane();
 		
 		VBox topArea = new VBox(10);
-		
 		HBox resourceLine = new HBox(10);
-		resourceLine.setPadding(new Insets(10, 0, 0, 10));
-		
 		HBox competenceLine = new HBox(10);
-		competenceLine.setPadding(new Insets(10, 0, 0, 10));
-		
 		HBox confirmLine = new HBox(10);
+		Label resourceNameLabel = new Label("Név:");
+		Label competenceLabel = new Label("Kompetencia:");
+		Button okButton = new Button("Ok");
+		Button cancelButton = new Button("Mégse");
+		
+		resourceLine.setPadding(new Insets(10, 0, 0, 10));
+		competenceLine.setPadding(new Insets(10, 0, 0, 10));
 		confirmLine.setPadding(new Insets(0, 10, 0, 10));
 		confirmLine.setAlignment(Pos.BASELINE_RIGHT);
 		
-		Label resourceNameLabel = new Label("Név:");
-		resourceLine.getChildren().add(resourceNameLabel);
-		resourceLine.getChildren().add(resourceName);
-		
-		Label competenceLabel = new Label("Kompetencia:");
-		competenceLine.getChildren().add(competenceLabel);
-		competenceLine.getChildren().add(competence);
-		
-		Button okButton = new Button("Ok");
         okButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	if(!resourceName.getText().isEmpty() && !competence.getSelectionModel().isEmpty()) {
@@ -83,18 +76,18 @@ public class ResourceWindow extends Window implements Observer {
             	}
             }
         });
-		Button cancelButton = new Button("Mégse");
+		
         cancelButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	((Stage)(((Button)e.getSource()).getScene().getWindow())).close();
             }
         });
-		confirmLine.getChildren().add(okButton);
-		confirmLine.getChildren().add(cancelButton);
+        
+        resourceLine.getChildren().addAll(resourceNameLabel, resourceName);
+		competenceLine.getChildren().addAll(competenceLabel, competence);
+		confirmLine.getChildren().addAll(okButton, cancelButton);
 		
-		topArea.getChildren().add(resourceLine);
-		topArea.getChildren().add(competenceLine);
-		topArea.getChildren().add(confirmLine);
+		topArea.getChildren().addAll(resourceLine, competenceLine, confirmLine);
 		
 		mainPane.setTop(topArea);
 		return mainPane;

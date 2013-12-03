@@ -45,33 +45,41 @@ public class DataManager {
 		ResultSet r = stm.executeQuery("SELECT Id FROM Competences WHERE competence = '" + competence + "'");
 		r.next();
 		stm.execute("INSERT INTO Resources (Resource, Competence) VALUES('" + name + "', " + r.getInt(1) +")");
+		stm.close();
 	}
 	
 	public void deleteResource(ResourceElement value) throws SQLException {
 		Statement stm = conn.createStatement();
 		stm.execute("DELETE FROM Resources WHERE Resource = '" + value.getName() + "' AND Competence = " + value.getCompetenceId());
+		stm.close();
 	}
 	
 	public void editResource(ResourceElement oldValue, String newName, String newComp) throws SQLException {
 		Statement stm = conn.createStatement();
 		stm.execute("UPDATE Resources SET Resource = '" + newName + "', Competence = " + stm.executeQuery("SELECT Id FROM Competences WHERE Competence = '" + newComp + "'").getInt(1) + " WHERE Resource = '" + oldValue.getName() + "' AND Competence = " + oldValue.getCompetenceId());
+		stm.close();
 	}
 	
 	public void addCompetence(String name) throws SQLException {
 		Statement stm = conn.createStatement();
 		stm.execute("INSERT INTO Competences(Competence) VALUES ('" + name + "')");
+		stm.close();
 	}
 	
 	public void deleteCompetence(String name) throws SQLException {
 		Statement stm = conn.createStatement();
-		if(stm.executeQuery("SELECT COUNT(Id) FROM Resources WHERE Competence = " + stm.executeQuery("SELECT Id FROM Competences WHERE Competence = '" + name + "'").getInt(1)).getInt(1) > 0)
+		if(stm.executeQuery("SELECT COUNT(Id) FROM Resources WHERE Competence = " + stm.executeQuery("SELECT Id FROM Competences WHERE Competence = '" + name + "'").getInt(1)).getInt(1) > 0) {
+			stm.close();
 			throw new SQLException("Item is referenced in other table.");
+		}
 		stm.execute("DELETE FROM Competences WHERE Competence = '" + name + "'");
+		stm.close();
 	}
 	
 	public void editCompetence(String oldName, String newName) throws SQLException {
 		Statement stm = conn.createStatement();
 		stm.execute("UPDATE Competences SET Competence = '" + newName + "' WHERE Competence = '" + oldName +"'");
+		stm.close();
 	}
 	
 	public ObservableList<String> getCompetences() throws SQLException {
@@ -81,6 +89,7 @@ public class DataManager {
 		while(r.next()) {
 			result.add(r.getString(1));
 		}
+		stm.close();
 		return result;
 	}
 	
@@ -92,6 +101,7 @@ public class DataManager {
         while(t.next()) {
         	result.add(new ResourceElement(t.getString(1), t.getString(3), t.getInt(2)));
         }  
+        stm.close();
 		return result;
 	}
 }
