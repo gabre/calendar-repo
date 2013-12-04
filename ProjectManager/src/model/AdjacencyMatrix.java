@@ -6,4 +6,9 @@ public class AdjacencyMatrix {
 	{
 		adjMx = new boolean[size][size];
 	}
+	
+	public AdjacencyMatrix (boolean adjMx[][])
+	{
+		this.adjMx = adjMx.clone();
+	}
 }

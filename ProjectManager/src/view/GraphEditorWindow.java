@@ -22,6 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class GraphEditorWindow extends Window {
     private enum editorState {SELECT_NODE, ADD_NODE, DELETE_NODE, ADD_EDGE, DELETE_EDGE};
@@ -32,8 +33,9 @@ public class GraphEditorWindow extends Window {
     private Canvas graph_view;
     private Point2D dragStart;
     private Point2D dragAnchor;
+    private boolean startedDragOnNode = false;
+    
     private HBox hBox;
-
 	private TextField nameField = new TextField("");
 	private TextField durationField = new TextField("0");
 	private TextField descriptionField = new TextField("");
@@ -175,6 +177,7 @@ public class GraphEditorWindow extends Window {
             public void handle(MouseEvent me) {
                dragStart = new Point2D((float) me.getX(), (float) me.getY());
                dragAnchor = dragStart;
+           	   startedDragOnNode = graph_model.validNode(dragStart);
            }
         });
 
@@ -188,6 +191,15 @@ public class GraphEditorWindow extends Window {
             		}
             	}
             	graph_model.renderGraph(graph_view.getGraphicsContext2D());
+            	// draw edge preview line
+        		if(currentState == editorState.ADD_EDGE && startedDragOnNode) {
+        			graph_view.getGraphicsContext2D().setStroke(Color.RED);
+        			graph_view.getGraphicsContext2D().strokeLine(
+        					dragStart.getX(),
+        					dragStart.getY(),
+        					me.getX(),
+        					me.getY());
+            	}
             }
         });
         
