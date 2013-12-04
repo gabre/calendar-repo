@@ -10,6 +10,7 @@ import app.ProjectManagerApplication;
 import model.ResourceElement;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -105,27 +106,12 @@ public class ResourceManagementWindow extends Window implements Observer {
         Label resourceFilterLabel = new Label("Szûrés:");
         Label competenceFilterLabel = new Label("Szûrés:");
         
-        try {
-        	resourceView.getItems().clear();
-			resourceView.setItems(app.getDataManager().getResources());
-		} catch (SQLException ex) {
-			app.showMessage(ex.getMessage());
-			addResourceButton.setDisable(true);
-			deleteResourceButton.setDisable(true);
-			editResourceButton.setDisable(true);
-			filterResourceButton.setDisable(true);
-		}
-        
-        try {
-        	competenceView.getItems().clear();
-			competenceView.setItems(app.getDataManager().getCompetences());
-		} catch (SQLException ex) {
-			app.showMessage(ex.getMessage());
-			addCompetenceButton.setDisable(true);
-			deleteCompetenceButton.setDisable(true);
-			editCompetenceButton.setDisable(true);
-			filterCompetenceButton.setDisable(true);
-		}
+        resourceView.getItems().clear();
+		resourceView.setItems(app.getModel().getResources());
+
+
+        competenceView.getItems().clear();
+		competenceView.setItems(app.getModel().getCompetences());
         
         addResourceButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -203,77 +189,57 @@ public class ResourceManagementWindow extends Window implements Observer {
 	}
 	
 	private void addResourceClicked() {
-    	try {
-    		ResourceWindow window = new ResourceWindow("Új erõforrás felvétele", app.getDataManager().getCompetences(), null);
-    		showWindow(window, 300, 130);
-    		if(window.isConfirmed()) {
-            	app.getDataManager().addResource(window.getName(), window.getCompetence());
-            	resourceView.setItems(app.getDataManager().getResources());
-            }
-    	} catch (SQLException ex) {
-    		app.showMessage(ex.getMessage());
-    	}
+		ResourceWindow window = new ResourceWindow("Új erõforrás felvétele", app.getModel().getCompetences(), null);
+		showWindow(window, 300, 130);
+		if(window.isConfirmed()) {
+        	app.getModel().addResource(new ResourceElement(window.getName(), window.getCompetence()));
+        	resourceView.setItems(app.getModel().getResources());
+        }
 	}
 	
 	private void deleteResourceClicked() {
 		if(!resourceView.getSelectionModel().isEmpty()) {
-    		try {
-    			app.getDataManager().deleteResource(resourceView.getSelectionModel().getSelectedItem().getName());
-    			resourceView.setItems(app.getDataManager().getResources());
-    		} catch (SQLException ex) {
-    			app.showMessage(ex.getMessage());
-    		}
+			app.getModel().deleteResource(resourceView.getSelectionModel().getSelectedItem());
+			resourceView.setItems(app.getModel().getResources());
 		}
 	}
 	
 	private void editResourceClicked() {
-		if(!resourceView.getSelectionModel().isEmpty())
-    		try {
-    			ResourceWindow window = new ResourceWindow("Erõforrás szerkesztése", app.getDataManager().getCompetences(), resourceView.getSelectionModel().getSelectedItem());
-    			showWindow(window, 300, 130);
-    			if(window.isConfirmed()) {
-    				app.getDataManager().editResource(resourceView.getSelectionModel().getSelectedItem(), window.getName(), window.getCompetence());
-    				resourceView.setItems(app.getDataManager().getResources());
-    			}
-    		} catch (SQLException ex) {
-    			app.showMessage(ex.getMessage());
-    		}
+		if(!resourceView.getSelectionModel().isEmpty()) {
+			ResourceWindow window = new ResourceWindow("Erõforrás szerkesztése", app.getModel().getCompetences(), resourceView.getSelectionModel().getSelectedItem());
+			showWindow(window, 300, 130);
+			if(window.isConfirmed()) {
+				app.getModel().editResource(resourceView.getSelectionModel().getSelectedItem(), new ResourceElement(window.getName(), window.getCompetence()));
+				resourceView.setItems(app.getModel().getResources());
+			}
+		}
 	}
 	
 	private void filterResourceClicked() {
-		try {
-			ObservableList<ResourceElement> values = app.getDataManager().getResources();
-        	for(int i = values.size() - 1; i>=0; --i )
-        	{
-        		if(!values.get(i).getName().startsWith(resourceFilter.getText()))
-        			values.remove(i);
-        	}
-        	resourceView.setItems(values);
-		} catch (SQLException ex) {
-			app.showMessage(ex.getMessage());
-		}
+		ObservableList<ResourceElement> values = app.getModel().getResources();
+		ObservableList<ResourceElement> current = FXCollections.observableArrayList();
+    	for(int i = values.size() - 1; i>=0; --i )
+    	{	
+    		ResourceElement elem = values.get(i);
+    		if(elem.getName().startsWith(resourceFilter.getText()))
+    			current.add(elem);
+    	}
+    	resourceView.setItems(current);
 	}
 	
 	private void addCompetenceClicked() {
-		try {
-			CompetenceWindow window = new CompetenceWindow("Új kompetencia felvétele", "");
-		    showWindow(window, 300, 100);
-		    if(window.isConfirmed())
-		    	app.getDataManager().addCompetence(window.getCompetence());
-				competenceView.setItems(app.getDataManager().getCompetences());
-		} catch (SQLException ex) {
-			app.showMessage(ex.getMessage());
-		}
+		CompetenceWindow window = new CompetenceWindow("Új kompetencia felvétele", "");
+	    showWindow(window, 300, 100);
+	    if(window.isConfirmed()) {
+	    	app.getModel().addCompetence(window.getCompetence());
+			competenceView.setItems(app.getModel().getCompetences());
+	    }
 	}
 	
 	private void deleteCompetenceClicked() {
 		if(!competenceView.getSelectionModel().isEmpty()) {
-    		try {
-    			app.getDataManager().deleteCompetence(competenceView.getSelectionModel().getSelectedItem());
-    			competenceView.setItems(app.getDataManager().getCompetences());
-    		} catch (SQLException ex) {
-    			app.showMessage(ex.getMessage());
-    		}
+			app.getModel().deleteCompetence(competenceView.getSelectionModel().getSelectedItem());
+			competenceView.setItems(app.getModel().getCompetences());
 		}
 	}
 	
@@ -282,28 +248,22 @@ public class ResourceManagementWindow extends Window implements Observer {
     		CompetenceWindow window = new CompetenceWindow("Kompetencia szerkesztése", competenceView.getSelectionModel().getSelectedItem());
     		showWindow(window, 300, 100);
     		if(window.isConfirmed()) {
-    			try {
-    				app.getDataManager().editCompetence(competenceView.getSelectionModel().getSelectedItem(), window.getCompetence());
-    				competenceView.setItems(app.getDataManager().getCompetences());
-    				resourceView.setItems(app.getDataManager().getResources());
-    			} catch (SQLException ex) {
-    				app.showMessage(ex.getMessage());
-    			}
+				app.getModel().editCompetence(competenceView.getSelectionModel().getSelectedItem(), window.getCompetence());
+				competenceView.setItems(app.getModel().getCompetences());
+				resourceView.setItems(app.getModel().getResources());
     		}
     	}
 	}
 	
 	private void filterCompetenceClicked() {
-		try {
-			ObservableList<String> values = app.getDataManager().getCompetences();
-        	for(int i = values.size() - 1; i>=0; --i )
-        	{
-        		if(!values.get(i).startsWith(competenceFilter.getText()))
-        			values.remove(i);
-        	}
-        	competenceView.setItems(values);
-		} catch (SQLException ex) {
-			app.showMessage(ex.getMessage());
-		}
+		ObservableList<String> values = app.getModel().getCompetences();
+		ObservableList<String> current = FXCollections.observableArrayList();
+    	for(int i = values.size() - 1; i>=0; --i )
+    	{
+    		String element = values.get(i);
+    		if(element.startsWith(competenceFilter.getText()))
+    			current.add(element);
+    	}
+    	competenceView.setItems(current);
 	}
 }

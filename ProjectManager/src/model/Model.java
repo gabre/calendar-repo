@@ -3,6 +3,7 @@ package model;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,6 +40,10 @@ public class Model {
 			.observableArrayList();
 	private ObservableList<Project> projects = FXCollections
 			.observableArrayList();
+	private ObservableList<ResourceElement> resources = FXCollections
+			.observableArrayList();
+	private ObservableList<String> competences = FXCollections
+			.observableArrayList();
 
 	private Connection connection;
 
@@ -70,17 +75,21 @@ public class Model {
 		return entries;
 	}
 
-	public Project sortProjectPlan(GraphDataModel graph) throws CycleDetectedException {
-		LinkedList<Integer> sortedList = TopologicalSorter.topologicalSort(graph.getGraphStructure().toAdjacencyMatrix());
+	public Project sortProjectPlan(GraphDataModel graph)
+			throws CycleDetectedException {
+		LinkedList<Integer> sortedList = TopologicalSorter
+				.topologicalSort(graph.getGraphStructure().toAdjacencyMatrix());
 		Project p = new Project("unnamed");
 		HashMap<Integer, GraphNodeData> nodes = graph.getNodes();
-		Integer[] expectedL = new Integer[] {1,3,2,4};
+		Integer[] expectedL = new Integer[] { 1, 3, 2, 4 };
 		assertArrayEquals(sortedList.toArray(), expectedL);
-		for(Integer nodeId : sortedList) {
+		for (Integer nodeId : sortedList) {
 			GraphNodeData node = nodes.get(nodeId);
 			System.out.println(nodeId);
-			if(node == null) System.out.println("node null");
-			if(node != null && node.desc == null) System.out.println("node desc null");
+			if (node == null)
+				System.out.println("node null");
+			if (node != null && node.desc == null)
+				System.out.println("node desc null");
 			ProjectStep newStep = new ProjectStep(node.desc);
 			p.addStep(newStep);
 		}
@@ -145,8 +154,7 @@ public class Model {
 	}
 
 	private void createTables() {
-		try {
-			Statement s = connection.createStatement();
+		try (Statement s = connection.createStatement()) {
 			s.execute("CREATE TABLE IF NOT EXISTS Projects ("
 					+ "Id INTEGER PRIMARY KEY," + "Name VARCHAR(255)" + ")");
 			s.execute("CREATE TABLE IF NOT EXISTS ProjectSteps ("
@@ -157,6 +165,16 @@ public class Model {
 			s.execute("CREATE TABLE IF NOT EXISTS Entries ("
 					+ "ProjectId INTEGER," + "Name VARCHAR(255),"
 					+ "Description VARCHAR(255)," + "Date INTEGER" + ")");
+			s.execute("CREATE TABLE IF NOT EXISTS Competences ("
+					+ "Id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "Competence VARCHAR(255) UNIQUE" + ")");
+			s.execute("CREATE TABLE IF NOT EXISTS Resources ("
+					+ "Id INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "Resource VARCHAR(255) UNIQUE,"
+					+ "Competence INTEGER,"
+					+ "FOREIGN KEY (Competence) REFERENCES Competences(Competence)"
+					+ ")");
+
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -199,6 +217,19 @@ public class Model {
 							.getInt("ProjectId"))));
 				}
 			}
+			
+			res = s.executeQuery("SELECT * FROM Resources");
+			while (res.next()) {
+				ResourceElement r = new ResourceElement(res.getString("Resource"),
+														res.getString("Competence"));
+				resources.add(r);
+			}
+			
+			res = s.executeQuery("SELECT * FROM Competences");
+			while (res.next()) {
+				String comp = res.getString("Competence");
+				competences.add(comp);
+			}
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -211,6 +242,8 @@ public class Model {
 			s.execute("DELETE FROM Projects");
 			s.execute("DELETE FROM ProjectSteps");
 			s.execute("DELETE FROM Entries");
+			s.execute("DELETE FROM Resources");
+			s.execute("DELETE FROM Competences");
 			HashMap<Project, Integer> projIds = new HashMap<>();
 			int id = 0;
 			for (Project proj : projects) {
@@ -245,6 +278,19 @@ public class Model {
 							entry.getDescription(), entry.getDate().getTime()));
 				}
 			}
+			
+			for (ResourceElement res : resources) {
+				s.execute(String.format(
+						"INSERT INTO Resources (Resource, Competence) VALUES ('%s', '%s')",
+						res.getName(), res.getCompetence()));
+			}
+			
+			for (String comp :competences) {
+				s.execute(String.format(
+						"INSERT INTO Competences (Competence) VALUES ('%s')",
+						comp));
+			}
+			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -257,4 +303,37 @@ public class Model {
 		projects.add(i, sel);
 	}
 
+	public void addResource(ResourceElement newRes) {
+		resources.add(newRes);
+	}
+	
+	public void deleteResource(ResourceElement elem) {
+		resources.remove(elem);
+	}
+	
+	public void editResource(ResourceElement oldValue, ResourceElement newValue) {
+		int index = resources.indexOf(oldValue);
+		resources.set(index, newValue);
+	}
+	
+	public void addCompetence(String name) {
+		competences.add(name);
+	}
+	
+	public void deleteCompetence(String name) {
+		competences.remove(name);
+	}
+	
+	public void editCompetence(String oldName, String newName) {
+		int index = competences.indexOf(oldName);
+		competences.set(index, newName);
+	}
+	
+	public ObservableList<String> getCompetences() {
+		return competences;
+	}
+	
+	public ObservableList<ResourceElement> getResources() {
+		return resources;
+	}
 }

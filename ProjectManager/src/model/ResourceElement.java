@@ -5,10 +5,15 @@ public class ResourceElement {
 	private String competence;
 	private int competenceId;
 	
-	public ResourceElement(String n, String c, int id) {
+	static private int id = 0;
+	static private int getId() {
+		return ++id;
+	}
+	
+	public ResourceElement(String n, String c) {
 		name = n;
 		competence = c;
-		competenceId = id;
+		competenceId = getId();
 	}
 	
 	public String getName() {

@@ -124,11 +124,7 @@ public class GraphEditorWindow extends Window {
 			}
 		});
 		
-		try {
-			competenceBox.setItems(app.getDataManager().getCompetences());
-		} catch (SQLException e) {
-			
-		}
+		competenceBox.setItems(app.getModel().getCompetences());
 		
 		saveButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {

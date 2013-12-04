@@ -4,7 +4,8 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
-import model.DataManager;
+import model.Model;
+import model.ResourceElement;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,78 +15,67 @@ public class ResourceManagementTest {
 	
 	@Before
 	public void Init() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
+		Model model = new Model();
 		
-		manager.addCompetence("ut_fõzés");
-		manager.addCompetence("ut_takarítás");
+		model.addCompetence("ut_fõzés");
+		model.addCompetence("ut_takarítás");
 		
-		manager.addResource("ut_Balázs", "ut_fõzés");
-		manager.addResource("ut_János", "ut_takarítás");
+		model.addResource(new ResourceElement("ut_Balázs", "ut_fõzés"));
+		model.addResource(new ResourceElement("ut_János", "ut_takarítás"));
 	}
 	
 	@Test
 	public void CompetenceTest() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
-		int count = manager.getCompetences().size();
+		Model model = new Model();
+		int count = model.getCompetences().size();
 		
-		manager.addCompetence("ut_varrás");
+		model.addCompetence(new String("ut_varrás"));
 		
-		assertEquals(count + 1, manager.getCompetences().size());
+		assertEquals(count + 1, model.getCompetences().size());
 		
-		manager.editCompetence("ut_varrás", "ut_mosás");
+		model.editCompetence("ut_varrás", "ut_mosás");
 		
-		assertFalse(manager.getCompetences().contains("ut_varrás"));
-		assertTrue(manager.getCompetences().contains("ut_mosás"));
+		assertFalse(model.getCompetences().contains("ut_varrás"));
+		assertTrue(model.getCompetences().contains("ut_mosás"));
 		
-		manager.deleteCompetence("ut_mosás");
+		model.deleteCompetence("ut_mosás");
 		
-		assertEquals(count, manager.getCompetences().size());
+		assertEquals(count, model.getCompetences().size());
 	}
 	
 	@Test(expected = SQLException.class)
 	public void CompetenceExceptionTest() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
-		
-		manager.deleteCompetence("ut_fõzés");
+		Model model = new Model();
+		model.deleteCompetence(new String("ut_fõzés"));
 	}
 	
 	@Test
 	public void ResourceTest() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
-		int count = manager.getResources().size();
+		Model model = new Model();
+		int count = model.getResources().size();
 		
-		manager.addResource("ut_András", "ut_fõzés");
+		model.addResource(new ResourceElement("ut_András", "ut_fõzés"));
 		
-		assertEquals(count + 1, manager.getResources().size());
+		assertEquals(count + 1, model.getResources().size());
 		
-		manager.editResource(manager.getResources().get(count), "ut_András", "ut_takarítás");
+		model.editResource(model.getResources().get(count), new ResourceElement("ut_András", "ut_takarítás"));
 		
-		assertEquals("ut_takarítás", manager.getResources().get(count).getCompetence());
+		assertEquals("ut_takarítás", model.getResources().get(count).getCompetence());
 		
-		manager.editResource(manager.getResources().get(count), "ut_Gábor", "ut_takarítás");
+		ResourceElement elem = new ResourceElement("ut_Gábor", "ut_takarítás");
 		
-		assertEquals("ut_Gábor", manager.getResources().get(count).getName());
+		model.editResource(model.getResources().get(count), elem);
 		
-		manager.deleteResource("ut_Gábor");
+		assertEquals("ut_Gábor", model.getResources().get(count).getName());
 		
-		assertEquals(count, manager.getResources().size());
+		model.deleteResource(elem);
+		
+		assertEquals(count, model.getResources().size());
 	}
 	
 	@Test(expected = SQLException.class)
 	public void ResourceExceptionTest() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
-		
-		manager.addResource("ut_Balázs", "ut_fõzés");
-	}
-	
-	@After
-	public void Release() throws ClassNotFoundException, SQLException {
-		DataManager manager = new DataManager();
-		
-		manager.deleteResource("ut_Balázs");
-		manager.deleteResource("ut_János");
-		
-		manager.deleteCompetence("ut_takarítás");
-		manager.deleteCompetence("ut_fõzés");
+		Model model = new Model();	
+		model.addResource(new ResourceElement("ut_Balázs", "ut_fõzés"));
 	}
 }

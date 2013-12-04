@@ -11,7 +11,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.CalendarEntry;
-import model.DataManager;
 import model.Descriptor;
 import model.Model;
 import model.Project;
@@ -29,7 +28,6 @@ import view.Window;
 public class ProjectManagerApplication extends Application {
 	// Model
 	private Model model;
-	private DataManager dataManager;
 	
 	// View
 	private MainWindow mainWin;
@@ -63,7 +61,6 @@ public class ProjectManagerApplication extends Application {
     public void start(Stage stage) {
 		try {
 	        model = new Model();
-	        dataManager = new DataManager();
 		} catch (Exception ex) {
 			System.exit(1);
 		}
@@ -96,10 +93,6 @@ public class ProjectManagerApplication extends Application {
     
     public Model getModel() {
     	return model;
-    }
-    
-    public DataManager getDataManager() {
-    	return dataManager;
     }
     
     public void entryWindowClosed() {

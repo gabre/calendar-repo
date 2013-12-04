@@ -131,11 +131,7 @@ public class StepEditorWindow extends Window {
 		descriptionField.setText(step.getDescription());
 		difficultyField.setText(Integer.toString(step.getDifficulty()));
 		costField.setText(Integer.toString(step.getCost()));
-		try {
-			competenceBox.setItems(app.getDataManager().getCompetences());
-		} catch (SQLException e) {
-			
-		}
+		competenceBox.setItems(app.getModel().getCompetences());
 		competenceBox.getSelectionModel().select(step.getNeededCompetence());
 	}
 }
