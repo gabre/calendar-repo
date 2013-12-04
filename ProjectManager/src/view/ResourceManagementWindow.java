@@ -192,8 +192,10 @@ public class ResourceManagementWindow extends Window implements Observer {
 		ResourceWindow window = new ResourceWindow("Új erõforrás felvétele", app.getModel().getCompetences(), null);
 		showWindow(window, 300, 130);
 		if(window.isConfirmed()) {
-        	app.getModel().addResource(new ResourceElement(window.getName(), window.getCompetence()));
-        	resourceView.setItems(app.getModel().getResources());
+        	if (app.getModel().addResource(new ResourceElement(window.getName(), window.getCompetence())))
+        		resourceView.setItems(app.getModel().getResources());
+        	else
+        		app.showMessage("Resource name is exsist.");
         }
 	}
 	
@@ -231,8 +233,10 @@ public class ResourceManagementWindow extends Window implements Observer {
 		CompetenceWindow window = new CompetenceWindow("Új kompetencia felvétele", "");
 	    showWindow(window, 300, 100);
 	    if(window.isConfirmed()) {
-	    	app.getModel().addCompetence(window.getCompetence());
-			competenceView.setItems(app.getModel().getCompetences());
+	    	if (app.getModel().addCompetence(window.getCompetence()))
+	    		competenceView.setItems(app.getModel().getCompetences());
+	    	else
+	    		app.showMessage("Value is exsist.");
 	    }
 	}
 	

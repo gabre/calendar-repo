@@ -13,17 +13,6 @@ import org.junit.Test;
 
 public class ResourceManagementTest {
 	
-	@Before
-	public void Init() throws ClassNotFoundException, SQLException {
-		Model model = new Model();
-		
-		model.addCompetence("ut_fõzés");
-		model.addCompetence("ut_takarítás");
-		
-		model.addResource(new ResourceElement("ut_Balázs", "ut_fõzés"));
-		model.addResource(new ResourceElement("ut_János", "ut_takarítás"));
-	}
-	
 	@Test
 	public void CompetenceTest() throws ClassNotFoundException, SQLException {
 		Model model = new Model();
@@ -38,6 +27,8 @@ public class ResourceManagementTest {
 		assertFalse(model.getCompetences().contains("ut_varrás"));
 		assertTrue(model.getCompetences().contains("ut_mosás"));
 		
+		assertFalse(model.addCompetence("ut_mosás"));
+		
 		model.deleteCompetence("ut_mosás");
 		
 		assertEquals(count, model.getCompetences().size());
@@ -48,6 +39,8 @@ public class ResourceManagementTest {
 		Model model = new Model();
 		int count = model.getResources().size();
 		
+		model.addCompetence("ut_fõzés");
+		model.addCompetence("ut_takarítás");
 		model.addResource(new ResourceElement("ut_András", "ut_fõzés"));
 		
 		assertEquals(count + 1, model.getResources().size());
@@ -61,9 +54,13 @@ public class ResourceManagementTest {
 		model.editResource(model.getResources().get(count), elem);
 		
 		assertEquals("ut_Gábor", model.getResources().get(count).getName());
+		assertFalse(model.addResource(new ResourceElement("ut_Gábor", "ut_takarítás")));
 		
 		model.deleteResource(elem);
 		
 		assertEquals(count, model.getResources().size());
+		
+		model.deleteCompetence("ut_fõzés");
+		model.deleteCompetence("ut_takarítás");
 	}
 }

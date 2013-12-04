@@ -303,8 +303,16 @@ public class Model {
 		projects.add(i, sel);
 	}
 
-	public void addResource(ResourceElement newRes) {
+	public boolean addResource(ResourceElement newRes) {
+		boolean l = false;
+		for(ResourceElement r : resources) {
+			if(r.getName().equals(newRes.getName()))
+				l = true;
+		}
+		if(l)
+			return false;
 		resources.add(newRes);
+		return true;
 	}
 	
 	public void deleteResource(ResourceElement elem) {
@@ -316,8 +324,11 @@ public class Model {
 		resources.set(index, newValue);
 	}
 	
-	public void addCompetence(String name) {
+	public boolean addCompetence(String name) {
+		if(competences.contains(name))
+			return false;
 		competences.add(name);
+		return true;
 	}
 	
 	public void deleteCompetence(String name) {
