@@ -2,9 +2,12 @@ package test.unittest;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import model.AdjacencyMatrix;
 import model.GraphStructure;
 
 import org.junit.Test;
@@ -80,5 +83,48 @@ public class GraphStructureTest {
 		g.deleteNode(STARTS_FROM);
 		assertTrue(g.getNeighbors(STARTS_FROM).size() == 0);
 	}
+	
+	@Test
+	public void testToAdjMx() {
+		GraphStructure g = new GraphStructure();
+		g.addNode();
+		g.addNode();
+		g.addNode();
+		g.addEdge(STARTS_FROM, STARTS_FROM+1);
+		g.addEdge(STARTS_FROM, STARTS_FROM+2);
+		g.addEdge(STARTS_FROM+1, STARTS_FROM+2);
+		g.addEdge(STARTS_FROM+2, STARTS_FROM);
+		
+		boolean adj[][] =
+			{{false, true , true },
+			 {false, false, true },
+			 {true , false, false}
+			};
+		
+		assertTrue(Arrays.deepEquals(g.toAdjacencyMatrix().adjMx, adj));
+	}
+	
+	@Test
+	public void testFromAdjMx() {
+		GraphStructure g = new GraphStructure();
+		boolean adj[][] =
+			{{false, true , true },
+			 {false, false, true },
+			 {true , false, false}
+			};
+		
+		g.fromAdjacencyMatrix(new AdjacencyMatrix(adj));
 
+		assertFalse(g.getNeighbors(STARTS_FROM  ).contains(STARTS_FROM  ));
+		assertTrue (g.getNeighbors(STARTS_FROM  ).contains(STARTS_FROM+1));
+		assertTrue (g.getNeighbors(STARTS_FROM  ).contains(STARTS_FROM+2));
+		
+		assertFalse(g.getNeighbors(STARTS_FROM+1).contains(STARTS_FROM  ));
+		assertFalse(g.getNeighbors(STARTS_FROM+1).contains(STARTS_FROM+1));
+		assertTrue (g.getNeighbors(STARTS_FROM+1).contains(STARTS_FROM+2));
+
+		assertTrue (g.getNeighbors(STARTS_FROM+2).contains(STARTS_FROM  ));
+		assertFalse(g.getNeighbors(STARTS_FROM+2).contains(STARTS_FROM+1));
+		assertFalse(g.getNeighbors(STARTS_FROM+2).contains(STARTS_FROM+2));
+	}
 }
