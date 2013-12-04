@@ -81,8 +81,6 @@ public class Model {
 				.topologicalSort(graph.getGraphStructure().toAdjacencyMatrix());
 		Project p = new Project("unnamed");
 		HashMap<Integer, GraphNodeData> nodes = graph.getNodes();
-		Integer[] expectedL = new Integer[] { 1, 3, 2, 4 };
-		assertArrayEquals(sortedList.toArray(), expectedL);
 		for (Integer nodeId : sortedList) {
 			GraphNodeData node = nodes.get(nodeId);
 			System.out.println(nodeId);
