@@ -27,4 +27,8 @@ public class ResourceElement {
 	public int getCompetenceId() {
 		return competenceId;
 	}
+	
+	public void setCompetence(String value) {
+		competence = value;
+	}
 }

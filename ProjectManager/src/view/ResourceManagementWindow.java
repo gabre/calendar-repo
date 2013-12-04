@@ -195,7 +195,7 @@ public class ResourceManagementWindow extends Window implements Observer {
         	if (app.getModel().addResource(new ResourceElement(window.getName(), window.getCompetence())))
         		resourceView.setItems(app.getModel().getResources());
         	else
-        		app.showMessage("Resource name is exsist.");
+        		app.showMessage("Az erõforrás neve már létezik.");
         }
 	}
 	
@@ -233,17 +233,15 @@ public class ResourceManagementWindow extends Window implements Observer {
 		CompetenceWindow window = new CompetenceWindow("Új kompetencia felvétele", "");
 	    showWindow(window, 300, 100);
 	    if(window.isConfirmed()) {
-	    	if (app.getModel().addCompetence(window.getCompetence()))
-	    		competenceView.setItems(app.getModel().getCompetences());
-	    	else
-	    		app.showMessage("Value is exsist.");
+	    	if (!app.getModel().addCompetence(window.getCompetence()))
+	    		app.showMessage("Az érték már létezik.");
 	    }
 	}
 	
 	private void deleteCompetenceClicked() {
 		if(!competenceView.getSelectionModel().isEmpty()) {
-			app.getModel().deleteCompetence(competenceView.getSelectionModel().getSelectedItem());
-			competenceView.setItems(app.getModel().getCompetences());
+			if(!app.getModel().deleteCompetence(competenceView.getSelectionModel().getSelectedItem()))
+				app.showMessage("Az érték használva van");
 		}
 	}
 	
@@ -253,8 +251,7 @@ public class ResourceManagementWindow extends Window implements Observer {
     		showWindow(window, 300, 100);
     		if(window.isConfirmed()) {
 				app.getModel().editCompetence(competenceView.getSelectionModel().getSelectedItem(), window.getCompetence());
-				competenceView.setItems(app.getModel().getCompetences());
-				resourceView.setItems(app.getModel().getResources());
+				//resourceView.setItems(app.getModel().getResources());
     		}
     	}
 	}

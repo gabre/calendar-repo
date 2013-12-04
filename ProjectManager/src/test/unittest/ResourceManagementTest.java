@@ -53,6 +53,7 @@ public class ResourceManagementTest {
 		
 		model.editResource(model.getResources().get(count), elem);
 		
+		assertFalse(model.deleteCompetence("ut_takarítás"));
 		assertEquals("ut_Gábor", model.getResources().get(count).getName());
 		assertFalse(model.addResource(new ResourceElement("ut_Gábor", "ut_takarítás")));
 		

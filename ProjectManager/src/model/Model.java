@@ -279,17 +279,18 @@ public class Model {
 				}
 			}
 			
+			for (String comp :competences) {
+				s.execute(String.format(
+						"INSERT INTO Competences (Competence) VALUES ('%s')",
+						comp));
+			}
+			
 			for (ResourceElement res : resources) {
 				s.execute(String.format(
 						"INSERT INTO Resources (Resource, Competence) VALUES ('%s', '%s')",
 						res.getName(), res.getCompetence()));
 			}
 			
-			for (String comp :competences) {
-				s.execute(String.format(
-						"INSERT INTO Competences (Competence) VALUES ('%s')",
-						comp));
-			}
 			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -331,13 +332,30 @@ public class Model {
 		return true;
 	}
 	
-	public void deleteCompetence(String name) {
+	public boolean deleteCompetence(String name) {
+		boolean l = false;
+		for(ResourceElement r : resources) {
+			if(r.getCompetence().equals(name))
+				l = true;
+		}
+		if (l)
+			return false;
 		competences.remove(name);
+		return true;
 	}
 	
 	public void editCompetence(String oldName, String newName) {
 		int index = competences.indexOf(oldName);
 		competences.set(index, newName);
+		
+		int resIndex = 0;
+		while (resIndex < resources.size()) {
+			if(resources.get(resIndex).getCompetence().equals(oldName)) {
+				ResourceElement tmp = new ResourceElement(resources.get(resIndex).getName(), newName);
+				resources.set(resIndex, tmp);
+			}
+			++resIndex;
+		}
 	}
 	
 	public ObservableList<String> getCompetences() {
