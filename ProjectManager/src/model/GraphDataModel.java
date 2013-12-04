@@ -43,6 +43,10 @@ public class GraphDataModel {
     	if (selected_node == null) return null;
     	else return (GraphNodeData) graph_nodes.get(selected_node).clone();
     }
+    
+    public boolean validNode(Point2D pos) {
+		return getNodeByPos(pos) != null;    	
+    }
   
     public void selectNode(Point2D pos) {
 		selected_node = getNodeByPos(pos);
@@ -108,6 +112,7 @@ public class GraphDataModel {
     
     public void renderGraph(GraphicsContext gc)
     {
+		gc.setStroke(Color.BLACK);
         gc.setFill(Color.LIGHTGRAY);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getWidth());
         gc.setFill(Color.BLACK);
