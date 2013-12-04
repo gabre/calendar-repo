@@ -83,11 +83,6 @@ public class Model {
 		HashMap<Integer, GraphNodeData> nodes = graph.getNodes();
 		for (Integer nodeId : sortedList) {
 			GraphNodeData node = nodes.get(nodeId);
-			System.out.println(nodeId);
-			if (node == null)
-				System.out.println("node null");
-			if (node != null && node.desc == null)
-				System.out.println("node desc null");
 			ProjectStep newStep = new ProjectStep(node.desc);
 			p.addStep(newStep);
 		}
