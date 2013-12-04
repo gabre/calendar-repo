@@ -7,7 +7,6 @@ public class TopologicalSorter {
 	private enum Colour { White, Grey, Black };
 	
 	public static LinkedList<Integer> topologicalSort(AdjacencyMatrix graph) throws CycleDetectedException {
-		viz(graph.adjMx);
 		boolean[][] G = graph.adjMx;
 		Colour[] state = newArraySetToWhite(G.length);
 		LinkedList<Integer> L = new LinkedList<Integer>();
