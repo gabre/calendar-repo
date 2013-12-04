@@ -43,12 +43,6 @@ public class ResourceManagementTest {
 		assertEquals(count, model.getCompetences().size());
 	}
 	
-	@Test(expected = SQLException.class)
-	public void CompetenceExceptionTest() throws ClassNotFoundException, SQLException {
-		Model model = new Model();
-		model.deleteCompetence(new String("ut_fõzés"));
-	}
-	
 	@Test
 	public void ResourceTest() throws ClassNotFoundException, SQLException {
 		Model model = new Model();
@@ -71,11 +65,5 @@ public class ResourceManagementTest {
 		model.deleteResource(elem);
 		
 		assertEquals(count, model.getResources().size());
-	}
-	
-	@Test(expected = SQLException.class)
-	public void ResourceExceptionTest() throws ClassNotFoundException, SQLException {
-		Model model = new Model();	
-		model.addResource(new ResourceElement("ut_Balázs", "ut_fõzés"));
 	}
 }
